@@ -1,6 +1,7 @@
 import React from 'react';
-import {StyleSheet, Text, useColorScheme, View} from 'react-native';
+import {Text, useColorScheme, View} from 'react-native';
 import usePermissions from '../hooks/usePermissions';
+import '../global.css';
 
 const App = () => {
   usePermissions();
@@ -9,23 +10,12 @@ const App = () => {
   console.log('is dark mode', isDarkMode);
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.text}>Halka UI Native</Text>
+    <View className="bg-white flex-1 items-center justify-center">
+      <Text className="text-3xl text-blue-500 font-semibold">
+        Halka UI Native
+      </Text>
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  text: {
-    fontSize: 30,
-    fontWeight: 'bold',
-  },
-});
 
 export default App;
