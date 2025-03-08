@@ -1,0 +1,19 @@
+const sizes = {
+  small: { space: 10, fontSize: 14, iconSize: 4 },
+  medium: { space: 14, fontSize: 16, iconSize: 6 },
+  large: { space: 18, fontSize: 18, iconSize: 8 },
+};
+
+let variants = {
+  default: { bg: '#d1d5db', text: '#1f2937', iconColor: 'black' },
+  brand: { bg: '#4f46e5', text: 'white', iconColor: 'white' },
+  primary: { bg: '#3b82f6', text: 'white', iconColor: 'white' },
+  secondary: { bg: '#a855f7', text: 'white', iconColor: 'white' },
+  danger: { bg: '#ef4444', text: 'white', iconColor: 'white' },
+  success: { bg: '#22c55e', text: 'white', iconColor: 'white' },
+  warn: { bg: '#fb923c', text: 'white', iconColor: 'white' },
+  cancel: { bg: '#e5e7eb', text: '#374151', iconColor: 'white' },
+  action: { bg: '#bae6fd', text: '#1d4ed8', iconColor: 'white' },
+};
+
+export { sizes, variants };
