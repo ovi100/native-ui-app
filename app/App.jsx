@@ -12,12 +12,12 @@ const App = () => {
   console.log('is dark mode', isDarkMode);
 
   return (
-    <View className="bg-white flex-1 items-center justify-center">
+    <View className="bg-white flex-1">
       <Text className="text-3xl text-blue-500 font-semibold">
         Halka UI Native
       </Text>
       <Accordion title="Accordion">
-        <Text style={{color: 'red'}}>Halka UI Native</Text>
+        <Text>The above collapsible component toggles the expanded/collapsed state when the user presses the panel header by using the expanded state field.</Text>
       </Accordion>
     </View>
   );
