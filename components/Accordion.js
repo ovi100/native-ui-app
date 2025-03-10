@@ -1,10 +1,6 @@
 import React, { useState } from "react";
 import { View, Text, TouchableOpacity, LayoutChangeEvent } from "react-native";
-import Animated, {
-  useSharedValue,
-  useAnimatedStyle,
-  withTiming,
-} from "react-native-reanimated";
+import Animated, { useSharedValue, useAnimatedStyle, withTiming } from "react-native-reanimated";
 
 const sizes = {
   small: { space: 10, fontSize: 14, iconSize: 4 },
@@ -25,13 +21,18 @@ const variants = {
 };
 
 const Accordion = ({ title, children, size = "medium", variant = "default" }) => {
-  const height = useSharedValue(0);
   const [isActive, setIsActive] = useState(false);
+  const height = useSharedValue(0);
   const [contentHeight, setContentHeight] = useState(0);
 
   const animatedStyle = useAnimatedStyle(() => ({
     height: withTiming(isActive ? contentHeight : 0, { duration: 300 }),
   }));
+
+  const handleLayout = (event) => {
+    const { height } = event.nativeEvent.layout;
+    setContentHeight(height);
+  };
 
   const { space, fontSize } = sizes[size] || sizes.medium;
   const { bg, text } = variants[variant] || variants.default;
@@ -45,13 +46,7 @@ const Accordion = ({ title, children, size = "medium", variant = "default" }) =>
         <Text style={{ fontSize, color: text }}>{title}</Text>
       </TouchableOpacity>
       <Animated.View style={[animatedStyle, { overflow: "hidden" }]}>
-        <View
-          style={{ padding: space }}
-          onLayout={(event: LayoutChangeEvent) => {
-            const { height } = event.nativeEvent.layout;
-            setContentHeight(height);
-          }}
-        >
+        <View style={{ padding: space }} onLayout={handleLayout}>
           {children}
         </View>
       </Animated.View>
