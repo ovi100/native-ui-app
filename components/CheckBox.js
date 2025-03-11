@@ -1,59 +1,83 @@
 import React from 'react';
-import { View, Text, TouchableOpacity } from 'react-native';
+import {View, Text, Pressable, StyleSheet} from 'react-native';
 
-const defaultProps = {
-  label: '',
-  checked: false,
-  onChange: () => null,
-  disabled: false,
-  variant: 'default',
-  size: 'medium',
-};
-
-
-const CheckBox = ({ label, checked, size, variant, onChange, disabled }) => {
-
-  label = label || defaultProps.label;
-  checked = checked || defaultProps.checked;
-  onChange = onChange || defaultProps.onChange;
-  disabled = disabled || defaultProps.disabled;
-  size = size || defaultProps.size;
-  variant = variant || defaultProps.variant;
-
+const CheckBox = ({
+  label = '',
+  checked = false,
+  onChange = () => null,
+  disabled = false,
+  variant = 'default',
+  size = 'medium',
+  brandColor = '',
+}) => {
   const sizes = {
-    small: { box: 'w-5 h-5', sign: 'left-1 w-2 h-3', fontSize: 'text-sm' },
-    medium: { box: 'w-6 h-6', sign: 'left-1.5 w-2 h-3.5', fontSize: 'text-base' },
-    large: { box: 'w-7 h-7', sign: 'left-2 w-2 h-4', fontSize: 'text-lg' },
+    small: {
+      box: {width: 20, height: 20},
+      sign: {left: 4, width: 8, height: 12},
+      fontSize: 14,
+    },
+    medium: {
+      box: {width: 24, height: 24},
+      sign: {left: 6, width: 8, height: 14},
+      fontSize: 16,
+    },
+    large: {
+      box: {width: 28, height: 28},
+      sign: {left: 8, width: 8, height: 16},
+      fontSize: 18,
+    },
   };
-
   const variants = {
-    default: { bg: 'bg-black', border: 'border-black', text: 'text-black' },
-    brand: { bg: 'bg-brand', border: 'border-brand', text: 'text-brand' },
-    primary: { bg: 'bg-blue-500', border: 'border-blue-500', text: 'text-blue-500' },
-    secondary: { bg: 'bg-purple-500', border: 'border-purple-500', text: 'text-purple-500' },
-    danger: { bg: 'bg-red-500', border: 'border-red-500', text: 'text-red-500' },
-    success: { bg: 'bg-green-500', border: 'border-green-500', text: 'text-green-500' },
-    warn: { bg: 'bg-orange-400', border: 'border-orange-400', text: 'text-orange-500' },
+    default: {bg: '#000000', border: '#000000', sign: '#ffffff'},
+    brand: {bg: '#4f46e5', border: '#4f46e5', sign: '#ffffff'},
+    primary: {bg: '#3b82f6', border: '#3b82f6', sign: '#ffffff'},
+    secondary: {bg: '#a855f7', border: '#a855f7', sign: '#ffffff'},
+    danger: {bg: '#ef4444', border: '#ef4444', sign: '#ffffff'},
+    success: {bg: '#22c55e', border: '#22c55e', sign: '#ffffff'},
+    warn: {bg: '#fb923c', border: '#fb923c', sign: '#ffffff'},
+    cancel: {bg: '#e5e7eb', border: '#374151', sign: '#ffffff'},
+    action: {bg: '#bae6fd', border: '#1d4ed8', sign: '#ffffff'},
   };
 
-  const Wrapper = !disabled ? TouchableOpacity : View;
+  if (variant === 'brand' && brandColor) {
+    variants[variant].bg = brandColor;
+    variants[variant].border = brandColor;
+    variants[variant].text = brandColor;
+  }
+
+  const Wrapper = !disabled ? Pressable : View;
+
+  const dynamicCheckboxStyle = () => {
+    let styles;
+    if (checked) {
+      styles = {
+        borderColor: variants[variant].border,
+        backgroundColor: variants[variant].bg,
+      };
+    } else {
+      styles = {
+        borderColor: '#d1d5db',
+        backgroundColor: 'transparent',
+      };
+    }
+    return styles;
+  };
 
   return (
-    <Wrapper
-      className="flex-row items-center my-1.5"
-      onPress={() => onChange(!checked)}>
-      <View
-        className={`checkbox relative items-center justify-center border-2 ${sizes[size].box} 
-        ${checked ? `${variants[variant].bg} ${variants[variant].border}` : 'bg-transparent border-gray-300'} mr-2.5 rounded`}>
+    <Wrapper style={[styles.container]} onPress={() => onChange(!checked)}>
+      <View style={[styles.checkbox, sizes[size].box, dynamicCheckboxStyle()]}>
         {checked && (
-          <View className={`absolute ${sizes[size].sign} border-white 
-          border-b-2 border-r-2 rotate-[40deg] ease-in-out duration-500`} />
+          <View
+            style={[
+              styles.sign,
+              sizes[size].sign,
+              {borderColor: variants[variant].sign},
+            ]}
+          />
         )}
       </View>
       {label && (
-        <Text
-          // className={`${sizes[size].fontSize} ${checked ? 'text-black' : 'text-gray-400'} `}>
-          className={`${sizes[size].fontSize} text-black`}>
+        <Text style={[styles.label, {fontSize: sizes[size].fontSize}]}>
           {label}
         </Text>
       )}
@@ -62,3 +86,30 @@ const CheckBox = ({ label, checked, size, variant, onChange, disabled }) => {
 };
 
 export default CheckBox;
+
+const styles = StyleSheet.create({
+  container: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginVertical: 6,
+  },
+  checkbox: {
+    position: 'relative',
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderWidth: 2,
+    borderRadius: 4,
+    marginRight: 10,
+  },
+  sign: {
+    position: 'absolute',
+    borderBottomWidth: 2,
+    borderRightWidth: 2,
+    transform: [{rotate: '40deg'}],
+    marginRight: 10,
+  },
+  label: {
+    color: '#000000',
+  },
+});

@@ -1,6 +1,12 @@
 import React from 'react';
-import { ActivityIndicator, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { sizes, variants } from './common';
+import {
+  ActivityIndicator,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
+import {sizes, variants} from './common';
 
 const Button = ({
   size = 'medium',
@@ -12,8 +18,6 @@ const Button = ({
   disabled = false,
   loading = false,
 }) => {
-
-
   if (variant === 'brand' && brandColor) {
     variants[variant].bg = brandColor;
   }
@@ -36,19 +40,24 @@ const Button = ({
     };
   };
 
-  const dynamicContainerStyles = getDynamicContainerStyles(size, variant, disabled);
+  const dynamicContainerStyles = getDynamicContainerStyles(
+    size,
+    variant,
+    disabled,
+  );
   const dynamicTextStyles = getDynamicTextStyles(size, variant);
 
   return (
     <Wrapper
       onPress={onPress}
       disabled={disabled}
-      style={[styles.container, dynamicContainerStyles]}
-    >
+      style={[styles.container, dynamicContainerStyles]}>
       {loading ? (
         <>
           <ActivityIndicator size="small" color="#FFF" />
-          {text && <Text style={[styles.loadingText, dynamicTextStyles]}>{text}</Text>}
+          {text && (
+            <Text style={[styles.loadingText, dynamicTextStyles]}>{text}</Text>
+          )}
         </>
       ) : (
         <View style={styles.buttonContainer}>

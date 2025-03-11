@@ -1,32 +1,17 @@
 import React from 'react';
-import { Modal, Text, TouchableOpacity, View } from 'react-native';
+import {Modal, Text, TouchableOpacity, View} from 'react-native';
 
-const defaultProps = {
-  isOpen: false,
-  header: 'Dialog Header',
-  subHeader: '',
-  onClose: null,
-  onSubmit: null,
-  leftButtonText: 'Cancel',
-  rightButtonText: 'Submit',
-};
 const Dialog = ({
-  isOpen,
-  header,
-  subHeader,
-  onClose,
-  onSubmit,
-  leftButtonText,
-  rightButtonText,
-  children,
+  isOpen = false,
+  header = 'Dialog Header',
+  subHeader = '',
+  onClose = null,
+  onSubmit = null,
+  leftButtonText = 'Cancel',
+  rightButtonText = 'Submit',
+  children = null,
 }) => {
-  isOpen = isOpen || defaultProps.isOpen;
-  header = header || defaultProps.header;
-  subHeader = subHeader || defaultProps.subHeader;
-  onClose = onClose || defaultProps.onClose;
-  onSubmit = onSubmit || defaultProps.onSubmit;
-  leftButtonText = leftButtonText || defaultProps.leftButtonText;
-  rightButtonText = rightButtonText || defaultProps.rightButtonText;
+
   return (
     <Modal
       visible={isOpen}
@@ -53,10 +38,11 @@ const Dialog = ({
               <View className="button w-1/2 py-3">
                 <TouchableOpacity onPress={onClose}>
                   <Text
-                    className={`${leftButtonText === 'cancel'
-                      ? 'bg-gray-200 text-gray-700'
-                      : 'bg-sky-200 text-blue-700'
-                      } text-sm xs:text-base text-center font-bold rounded px-3 py-2 capitalize`}>
+                    className={`${
+                      leftButtonText === 'cancel'
+                        ? 'bg-gray-200 text-gray-700'
+                        : 'bg-sky-200 text-blue-700'
+                    } text-sm xs:text-base text-center font-bold rounded px-3 py-2 capitalize`}>
                     {leftButtonText}
                   </Text>
                 </TouchableOpacity>

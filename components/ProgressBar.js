@@ -1,58 +1,73 @@
-import React, { useEffect } from 'react';
-import { View } from 'react-native';
-import Animated, { useSharedValue, withTiming } from 'react-native-reanimated';
+import React, {useEffect} from 'react';
+import {StyleSheet, View} from 'react-native';
+import Animated, {useSharedValue, withTiming} from 'react-native-reanimated';
 
-const defaultProps = {
-  size: 'medium',
-  variant: 'default',
-  progress: 55,
-  duration: 1000,
-  edge: 'rounded',
-};
-
-const ProgressBar = ({ size, variant, progress, edge, duration }) => {
+const ProgressBar = ({
+  size = 'medium',
+  variant = 'default',
+  progress = 75,
+  duration = 1000,
+  edge = 'rounded',
+}) => {
   const progressWidth = useSharedValue(0);
 
   useEffect(() => {
-    progressWidth.value = withTiming(progress, { duration: duration });
+    progressWidth.value = withTiming(progress, {duration: duration});
   }, [duration, progress, progressWidth]);
 
-  size = size || defaultProps.size;
-  variant = variant || defaultProps.variant;
-  progress = progress || defaultProps.progress;
-  duration = duration || defaultProps.duration;
-  edge = edge || defaultProps.edge;
-
   const sizes = {
-    small: { height: 'h-1.5', fontSize: 'text-sm' },
-    medium: { height: 'h-2.5', fontSize: 'text-base' },
-    large: { height: 'h-3.5', fontSize: 'text-lg' },
+    small: {height: 7, fontSize: 14},
+    medium: {height: 10, fontSize: 16},
+    large: {height: 14, fontSize: 18},
   };
 
   const variants = {
-    default: { track: 'bg-gray-300', fill: 'bg-gray-700' },
-    brand: { track: 'bg-gray-300', fill: 'bg-brand' },
-    primary: { track: 'bg-gray-300 ', fill: 'bg-blue-500' },
-    secondary: { track: 'bg-gray-300', fill: 'bg-purple-500' },
-    danger: { track: 'bg-gray-300', fill: 'bg-red-500' },
-    success: { track: 'bg-gray-300', fill: 'bg-green-500' },
-    warn: { track: 'bg-gray-300', fill: 'bg-orange-400' },
+    default: {track: '#e5e7eb', fill: '#374151'},
+    brand: {track: '#e5e7eb', fill: '#c03221'},
+    primary: {track: '#e5e7eb', fill: '#3b82f6'},
+    secondary: {track: '#e5e7eb', fill: '#a855f7'},
+    danger: {track: '#e5e7eb', fill: '#ef4444'},
+    success: {track: '#e5e7eb', fill: '#22c55e'},
+    warn: {track: '#e5e7eb', fill: '#ff8904'},
+    // custom: custom,
   };
 
   const edges = {
-    square: 'rounded-none',
-    medium: 'rounded-md',
-    rounded: 'rounded-full',
+    square: 0,
+    medium: 6,
+    rounded: 100,
+  };
+
+  const progressStyle = {
+    width: `${progress}%`,
+    height: '100%',
+    backgroundColor: variants[variant].fill,
+    borderRadius: edges[edge],
   };
 
   return (
-    <View className={`relative w-full ${variants[variant].track} ${sizes[size].height} ${edges[edge]}`}>
-      <Animated.View
-        style={{ width: `${progress}%` }}
-        className={`h-full ${variants[variant].fill} ${edges[edge]}`}
-      />
+    <View
+      style={[
+        styles.container,
+        {
+          backgroundColor: variants[variant].track,
+          height: sizes[size].height,
+          borderRadius: edges[edge],
+        },
+      ]}>
+      <Animated.View style={progressStyle} />
     </View>
   );
 };
 
 export default ProgressBar;
+
+const styles = StyleSheet.create({
+  container: {
+    width: '100%',
+    position: 'relative',
+  },
+  progressText: {
+    fontWeight: 'semibold',
+  },
+});

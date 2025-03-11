@@ -1,7 +1,7 @@
 const sizes = {
-  small: { space: 10, fontSize: 14, iconSize: 4 },
-  medium: { space: 14, fontSize: 16, iconSize: 6 },
-  large: { space: 18, fontSize: 18, iconSize: 8 },
+  small: { space: 10, fontSize: 14, iconSize: 16 },
+  medium: { space: 14, fontSize: 16, iconSize: 20 },
+  large: { space: 18, fontSize: 18, iconSize: 24 },
 };
 
 let variants = {
