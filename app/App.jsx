@@ -1,5 +1,13 @@
-import React, { useCallback, useRef, useState } from 'react';
-import { Dimensions, Image, ScrollView, StyleSheet, Text, useColorScheme, View } from 'react-native';
+import React, {useCallback, useRef, useState} from 'react';
+import {
+  Dimensions,
+  Image,
+  ScrollView,
+  StyleSheet,
+  Text,
+  useColorScheme,
+  View,
+} from 'react-native';
 import usePermissions from '../hooks/usePermissions';
 import '../global.css';
 // import { Button } from 'halka-test';
@@ -9,23 +17,24 @@ import CircularProgress from '../components/CircularProgress';
 import ProgressBar from '../components/ProgressBar';
 import Tab from '../components/Tab';
 import Button from '../components/Button';
-import { accordions, tabs } from '../data';
+import {accordions, tabs} from '../data';
 import BottomSheet from '../components/BottomSheet';
-import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
+import {SafeAreaProvider, SafeAreaView} from 'react-native-safe-area-context';
+import Toast, {showToast} from '../components/Toast';
 
 const App = () => {
-  const [isChecked, setIsChecked] = useState(true);
+  // const [isChecked, setIsChecked] = useState(true);
   usePermissions();
-  const isDarkMode = useColorScheme() === 'dark';
-  const { height } = Dimensions.get('screen');
-  const bottomSheetRef = useRef();
+  // const isDarkMode = useColorScheme() === 'dark';
+  // const {height} = Dimensions.get('screen');
+  // const bottomSheetRef = useRef();
 
-  const sheetHandler = useCallback(() => {
-    bottomSheetRef.current.expand();
-  }, []);
+  // const sheetHandler = useCallback(() => {
+  //   bottomSheetRef.current.expand();
+  // }, []);
 
-  console.log('is dark mode', isDarkMode);
-  console.log('device height', height, height * 0.8);
+  // console.log('is dark mode', isDarkMode);
+  // console.log('device height', height, height * 0.8);
 
   return (
     // <SafeAreaProvider>
@@ -74,6 +83,18 @@ const App = () => {
         </View>
       </ScrollView>
 
+      <Button
+        text="Show Success Toast"
+        onPress={() =>
+          showToast({
+            message: 'This is a error message',
+            type: 'error',
+            animation: 'fadeIn',
+            position: 'bottom',
+            duration: 0,
+          })
+        }
+      />
 
       {/* <BottomSheet
         ref={bottomSheetRef}
@@ -98,9 +119,9 @@ const App = () => {
           </View>
         </View>
       </BottomSheet> */}
+      <Toast />
     </View>
     // </SafeAreaProvider>
-
   );
 };
 

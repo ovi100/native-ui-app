@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, { useState } from 'react';
 import {
   Dimensions,
   View,
@@ -11,6 +11,8 @@ import Animated, {
   useAnimatedStyle,
   withSpring,
   runOnJS,
+  FadeInRight,
+  FadeOutRight,
 } from 'react-native-reanimated';
 import {
   GestureHandlerRootView,
@@ -18,7 +20,7 @@ import {
   Gesture,
 } from 'react-native-gesture-handler';
 
-const {width} = Dimensions.get('window');
+const { width } = Dimensions.get('window');
 
 const lighten = (hex, percent = 30) => {
   // Remove '#' and parse RGB values
@@ -46,9 +48,9 @@ const Tab = ({
   const translateX = useSharedValue(0);
 
   const sizes = {
-    small: {space: 6, fontSize: 14, iconSize: 14},
-    medium: {space: 8, fontSize: 16, iconSize: 16},
-    large: {space: 10, fontSize: 18, iconSize: 18},
+    small: { space: 6, fontSize: 14, iconSize: 14 },
+    medium: { space: 8, fontSize: 16, iconSize: 16 },
+    large: { space: 10, fontSize: 18, iconSize: 18 },
   };
 
   const colors = {
@@ -116,33 +118,6 @@ const Tab = ({
     return styles;
   };
 
-  // const variants = {
-  //   default: {
-  //     ...baseStyles,
-  //     active: getActiveStyles(tabTheme),
-  //   },
-  //   brand: {
-  //     ...baseStyles,
-  //     active: getActiveStyles(tabTheme),
-  //   },
-  //   primary: {
-  //     ...baseStyles,
-  //     active: getActiveStyles(tabTheme),
-  //   },
-  //   secondary: {
-  //     ...baseStyles,
-  //     active: getActiveStyles(tabTheme),
-  //   },
-  //   danger: {
-  //     ...baseStyles,
-  //     active: getActiveStyles(tabTheme),
-  //   },
-  //   success: {
-  //     ...baseStyles,
-  //     active: getActiveStyles(tabTheme),
-  //   },
-  // };
-
   const variants = {
     ...Object.fromEntries(
       Object.entries(colors).map(([key]) => [
@@ -158,8 +133,8 @@ const Tab = ({
   const handleTabPress = index => {
     setActiveTab(index);
     translateX.value = withSpring(-width * index, {
-      damping: 20,
-      stiffness: 100,
+      damping: 50,
+      stiffness: 200,
     });
   };
 
@@ -174,17 +149,17 @@ const Tab = ({
         runOnJS(handleTabPress)(activeTab + 1);
       } else {
         translateX.value = withSpring(-width * activeTab, {
-          damping: 20,
-          stiffness: 100,
+          damping: 50,
+          stiffness: 200,
         });
       }
     });
 
-  const contentStyle = {width: width * tabs.length, flexDirection: 'row'};
+  const contentStyle = { width: width * tabs.length, flexDirection: 'row' };
 
   const animatedStyle = useAnimatedStyle(() => {
     return {
-      transform: [{translateX: translateX.value}],
+      transform: [{ translateX: translateX.value }],
     };
   });
 
@@ -233,14 +208,19 @@ const Tab = ({
         style={[
           styles.header,
           getTrackStyles(tabTheme),
-          {padding: sizes[size].space, fontSize: sizes[size].fontSize},
+          { padding: sizes[size].space, fontSize: sizes[size].fontSize },
         ]}>
         {tabs.map((tab, index) => (
           <TouchableOpacity
             key={index}
             onPress={() => handleTabPress(index)}
             style={tabButtonStyle(index)}>
-            <Text style={tabButtonTextStyle(index)}>{tab.title}</Text>
+            <Animated.Text
+              entering={FadeInRight.springify().damping(80).stiffness(200)}
+              exiting={FadeOutRight.springify().damping(80).stiffness(200)}
+              style={tabButtonTextStyle(index)}>
+              {tab.title}
+            </Animated.Text>
           </TouchableOpacity>
         ))}
       </View>
@@ -249,7 +229,7 @@ const Tab = ({
       <GestureDetector gesture={panGesture}>
         <Animated.View style={[contentStyle, animatedStyle]}>
           {tabs.map((tab, index) => (
-            <View key={index} style={{width}}>
+            <View key={index} style={{ width }}>
               {tab.content}
             </View>
           ))}
