@@ -20,6 +20,22 @@ import {
 
 const {width} = Dimensions.get('window');
 
+const lighten = (hex, percent = 30) => {
+  // Remove '#' and parse RGB values
+  const r = parseInt(hex.slice(1, 3), 16);
+  const g = parseInt(hex.slice(3, 5), 16);
+  const b = parseInt(hex.slice(5, 7), 16);
+
+  // Lighten each channel by the given percentage
+  const light = value => Math.min(255, value + (255 - value) * (percent / 100));
+
+  // Convert back to hex
+  return `#${[r, g, b]
+    .map(light)
+    .map(v => Math.round(v).toString(16).padStart(2, '0'))
+    .join('')}`;
+};
+
 const Tab = ({
   tabs = null,
   tabTheme = 'classic',
@@ -35,109 +51,108 @@ const Tab = ({
     large: {space: 10, fontSize: 18, iconSize: 18},
   };
 
+  const colors = {
+    default: '#374151',
+    brand: '#4f46e5',
+    primary: '#3b82f6',
+    secondary: '#a855f7',
+    danger: '#ef4444',
+    success: '#22c55e',
+  };
+
+  const baseStyles = {
+    text: '#6b7280',
+    iconColor: '#000',
+  };
+
+  const activeButtonStyles = color => ({
+    borderBottomWidth: 2,
+    borderColor: color,
+  });
+
+  const activeTextStyles = color => ({
+    color,
+    fontWeight: 'semibold',
+  });
+
+  const activeBackgroundStyles = (color, borderRadius) => ({
+    backgroundColor: color,
+    borderRadius,
+    color: '#FFF',
+    fontWeight: 'medium',
+    paddingHorizontal: 12,
+    paddingVertical: 4,
+  });
+
+  const getTrackStyles = theme => {
+    let styles = {
+      backgroundColor: '#fff',
+      borderColor: '#fff',
+      borderRadius: 0,
+    };
+    const hexColor = lighten(colors[variant], 40);
+
+    if (theme !== 'classic') {
+      styles.backgroundColor = hexColor;
+      styles.borderColor = hexColor;
+      styles.borderRadius = theme === 'rounded' ? 100 : 8;
+    }
+
+    return styles;
+  };
+
+  const getActiveStyles = theme => {
+    let styles = {};
+
+    if (theme === 'classic') {
+      styles.button = activeButtonStyles(colors[variant]);
+      styles.text = activeTextStyles(colors[variant]);
+    } else {
+      const radius = theme === 'square' ? 6 : 100;
+      styles.button = {};
+      styles.text = activeBackgroundStyles(colors[variant], radius);
+    }
+
+    return styles;
+  };
+
+  // const variants = {
+  //   default: {
+  //     ...baseStyles,
+  //     active: getActiveStyles(tabTheme),
+  //   },
+  //   brand: {
+  //     ...baseStyles,
+  //     active: getActiveStyles(tabTheme),
+  //   },
+  //   primary: {
+  //     ...baseStyles,
+  //     active: getActiveStyles(tabTheme),
+  //   },
+  //   secondary: {
+  //     ...baseStyles,
+  //     active: getActiveStyles(tabTheme),
+  //   },
+  //   danger: {
+  //     ...baseStyles,
+  //     active: getActiveStyles(tabTheme),
+  //   },
+  //   success: {
+  //     ...baseStyles,
+  //     active: getActiveStyles(tabTheme),
+  //   },
+  // };
+
   const variants = {
-    classic: {
-      track: {backgroundColor: '#fff', borderColor: '#fff'},
-      default: {
-        text: '#6b7280',
-        iconColor: '#000000',
-        active: {
-          button: {borderBottomWidth: 2, borderColor: '#374151'},
-          text: {color: '#374151', fontWeight: 'semibold'},
+    ...Object.fromEntries(
+      Object.entries(colors).map(([key]) => [
+        key,
+        {
+          ...baseStyles,
+          active: getActiveStyles(tabTheme),
         },
-      },
-      brand: {
-        text: '#6b7280',
-        iconColor: '#000000',
-        active: {
-          button: {borderBottomWidth: 2, borderColor: '#4f46e5'},
-          text: {color: '#4f46e5', fontWeight: 'semibold'},
-        },
-      },
-      primary: {
-        text: '#6b7280',
-        iconColor: '#000000',
-        active: {
-          button: 'border-b-2 border-blue-500',
-          text: 'text-blue-500 font-medium',
-        },
-      },
-      secondary: {
-        text: 'text-gray-500',
-        iconColor: '#000000',
-        active: {
-          button: 'border-b-2 border-purple-500',
-          text: 'text-purple-500 font-medium',
-        },
-      },
-      danger: {
-        text: 'text-gray-500',
-        iconColor: '#000000',
-        active: {
-          button: 'border-b-2 border-red-500',
-          text: 'text-red-500 font-medium',
-        },
-      },
-      success: {
-        text: 'text-gray-500',
-        iconColor: '#000000',
-        active: {
-          button: 'border-b-2 border-green-500',
-          text: 'text-green-500 font-medium',
-        },
-      },
-    },
-    modern: {
-      track: 'bg-gray-300 border-gray-300',
-      default: {
-        text: 'text-gray-500',
-        iconColor: '#FFF',
-        active: {
-          button: '',
-          text: 'bg-gray-700 text-white font-medium rounded-full px-4 py-1',
-        },
-      },
-      brand: {
-        text: 'text-gray-500',
-        iconColor: '#FFF',
-        active: {
-          button: '',
-          text: 'bg-brand text-white font-medium rounded-full px-4 py-1',
-        },
-      },
-      primary: {
-        text: 'text-gray-500',
-        iconColor: '#FFF',
-        active: {
-          button: '',
-          text: 'bg-blue-500 text-white font-medium rounded-full px-4 py-1',
-        },
-      },
-      secondary: {
-        text: 'text-gray-500',
-        iconColor: '#FFF',
-        active: {
-          button: '',
-          text: 'bg-purple-500 text-white font-medium rounded-full px-4 py-1',
-        },
-      },
-      danger: {
-        text: 'text-gray-500',
-        iconColor: '#FFF',
-        active: {
-          button: '',
-          text: 'bg-red-500 text-white font-medium rounded-full px-4 py-1',
-        },
-      },
-      success: {
-        text: 'text-gray-500',
-        iconColor: '#FFF',
-        active: {
-          button: '',
-          text: 'bg-green-500 text-white font-medium rounded-full px-4 py-1',
-        },
-      },
-    },
+      ]),
+    ),
   };
 
   const handleTabPress = index => {
@@ -178,23 +193,35 @@ const Tab = ({
   }
 
   const tabButtonStyle = index => {
-    if (activeTab === index) {
-      return variants[tabTheme][variant].active.button;
-    } else {
-      return {};
+    let styles = {
+      alignItems: 'center',
+      width: `${100 / tabs.length}%`,
+    };
+    if (tabTheme === 'classic') {
+      styles = {
+        ...styles,
+        paddingBottom: 5,
+      };
     }
+    if (activeTab === index) {
+      styles = {
+        ...styles,
+        ...variants[variant].active.button,
+      };
+    }
+    return styles;
   };
 
   const tabButtonTextStyle = index => {
     if (activeTab === index) {
       return {
         fontSize: sizes[size].fontSize,
-        ...variants[tabTheme][variant].active.text,
+        ...variants[variant].active.text,
       };
     } else {
       return {
         fontSize: sizes[size].fontSize,
-        color: variants[tabTheme][variant].active.text,
+        color: variants[variant].text,
       };
     }
   };
@@ -205,7 +232,7 @@ const Tab = ({
       <View
         style={[
           styles.header,
-          variants[tabTheme].track,
+          getTrackStyles(tabTheme),
           {padding: sizes[size].space, fontSize: sizes[size].fontSize},
         ]}>
         {tabs.map((tab, index) => (

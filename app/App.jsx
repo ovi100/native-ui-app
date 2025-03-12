@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { ScrollView, Text, useColorScheme, View } from 'react-native';
+import React, { useCallback, useRef, useState } from 'react';
+import { Dimensions, Image, ScrollView, StyleSheet, Text, useColorScheme, View } from 'react-native';
 import usePermissions from '../hooks/usePermissions';
 import '../global.css';
 // import { Button } from 'halka-test';
@@ -9,92 +9,32 @@ import CircularProgress from '../components/CircularProgress';
 import ProgressBar from '../components/ProgressBar';
 import Tab from '../components/Tab';
 import Button from '../components/Button';
+import { accordions, tabs } from '../data';
+import BottomSheet from '../components/BottomSheet';
+import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 
 const App = () => {
   const [isChecked, setIsChecked] = useState(true);
   usePermissions();
   const isDarkMode = useColorScheme() === 'dark';
+  const { height } = Dimensions.get('screen');
+  const bottomSheetRef = useRef();
+
+  const sheetHandler = useCallback(() => {
+    bottomSheetRef.current.expand();
+  }, []);
 
   console.log('is dark mode', isDarkMode);
-
-  const accordionStyle = { color: '#fff', fontSize: 14 };
-
-  const data = [
-    {
-      title: 'Accordion 1',
-      content: (
-        <View>
-          <Text style={accordionStyle}>
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
-            Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure
-            dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat
-            non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-          </Text>
-        </View>
-      ),
-    },
-    {
-      title: 'Accordion 2',
-      content: (
-        <View>
-          <Text style={accordionStyle}>
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
-            Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure
-            dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat
-            non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-          </Text>
-        </View>
-      ),
-    },
-    {
-      title: 'Accordion 2',
-      content: (
-        <View>
-          <Text style={accordionStyle}>
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
-            Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure
-            dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat
-            non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-          </Text>
-        </View>
-      ),
-    },
-  ];
-
-  const tabs = [
-    {
-      title: 'Tab 1',
-      content: (
-        <View className="mt-5">
-          <Text className="text-lg">Content for Tab 1</Text>
-        </View>
-      ),
-    },
-    {
-      title: 'Tab 2',
-      content: (
-        <View className="mt-5">
-          <Text className="text-lg">Content for Tab 2</Text>
-        </View>
-      ),
-    },
-    {
-      title: 'Tab 3',
-      content: (
-        <View className="mt-5">
-          <Text className="text-lg">Content for Tab 3</Text>
-        </View>
-      ),
-    },
-  ];
+  console.log('device height', height, height * 0.8);
 
   return (
+    // <SafeAreaProvider>
     <View className="bg-white flex-1 p-5">
-      {/* <Text className="text-3xl text-blue-500 font-semibold">
-        Native UI
-      </Text> */}
+      {/* <View className="mt-5">
+          <Button text="open sheet" variant="action" onPress={() => sheetHandler()} />
+        </View> */}
       <ScrollView showsVerticalScrollIndicator={false}>
-        {data.map((item, i) => {
+        {/* {accordions.map((item, i) => {
           return <Accordion item={item} variant="brand" key={i} />;
         })}
         <View className="buttons flex-col gap-5 mt-5">
@@ -126,14 +66,95 @@ const App = () => {
           <ProgressBar size="small" />
           <ProgressBar />
           <ProgressBar size="large" />
-        </View>
+        </View> */}
         <View className="tabs flex-col gap-5 mt-5">
           <Tab tabs={tabs} />
-          {/* <Tab tabs={tabs} tabTheme="modern" /> */}
+          <Tab tabs={tabs} tabTheme="square" variant="brand" />
+          <Tab tabs={tabs} tabTheme="rounded" variant="primary" />
         </View>
       </ScrollView>
+
+
+      {/* <BottomSheet
+        ref={bottomSheetRef}
+        activeHeight={height}
+        backgroundColor={'#f2f2f2'}
+        backDropColor={'black'}>
+        <View style={styles.container}>
+          <View style={styles.imageContaier}>
+            <Image
+              source={{ uri: 'https://placehold.jp/500x500.png' }}
+              style={styles.image}
+            />
+          </View>
+
+          <View style={styles.textContainer}>
+            <Text style={styles.text}>Royal Palm Sofa</Text>
+            <Text style={styles.text}>Vissle dark Blue/Kabusa dark Navy</Text>
+            <Text style={styles.textPrice}>Price: $100</Text>
+          </View>
+          <View>
+            <Button text="ADD TO CART" variant="success" />
+          </View>
+        </View>
+      </BottomSheet> */}
     </View>
+    // </SafeAreaProvider>
+
   );
 };
 
 export default App;
+
+const styles = StyleSheet.create({
+  container: {
+    // flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  imageContaier: {
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  imageContaierExample2: {
+    marginHorizontal: 20,
+    marginBottom: 20,
+  },
+  image: {
+    width: 200,
+    height: undefined,
+    aspectRatio: 1,
+  },
+  imageExample2: {
+    width: '100%',
+    height: undefined,
+    aspectRatio: 1.65636588,
+  },
+  button: {
+    alignItems: 'center',
+    backgroundColor: '#000000',
+    padding: 16,
+    marginHorizontal: 20,
+    marginBottom: 20,
+    borderRadius: 16,
+  },
+  buttonText: {
+    color: '#DAD3C8',
+  },
+  textContainer: {
+    marginHorizontal: 20,
+  },
+  text: {
+    color: '#000000',
+    fontSize: 16,
+  },
+  textExample2: {
+    color: '#000000',
+    fontSize: 26,
+  },
+  textPrice: {
+    color: '#000000',
+    marginVertical: 20,
+    fontSize: 16,
+  },
+});
