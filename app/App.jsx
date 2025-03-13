@@ -1,4 +1,4 @@
-import React, {useCallback, useRef, useState} from 'react';
+import React, { useCallback, useRef, useState } from 'react';
 import {
   Dimensions,
   Image,
@@ -17,10 +17,11 @@ import CircularProgress from '../components/CircularProgress';
 import ProgressBar from '../components/ProgressBar';
 import Tab from '../components/Tab';
 import Button from '../components/Button';
-import {accordions, tabs} from '../data';
+import { accordions, images, tabs } from '../data';
 import BottomSheet from '../components/BottomSheet';
-import {SafeAreaProvider, SafeAreaView} from 'react-native-safe-area-context';
-import Toast, {showToast} from '../components/Toast';
+import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
+import Toast, { showToast } from '../components/Toast';
+import Carousel from '../components/Carousel';
 
 const App = () => {
   // const [isChecked, setIsChecked] = useState(true);
@@ -81,6 +82,20 @@ const App = () => {
           <Tab tabs={tabs} tabTheme="square" variant="brand" />
           <Tab tabs={tabs} tabTheme="rounded" variant="primary" />
         </View>
+
+        <View className="carousels flex-col gap-5 mt-5">
+          <Carousel
+            images={images}
+            direction="horizontal"
+          />
+          {/* <Carousel
+            data={['Slide 1', 'Slide 2', 'Slide 3']}
+            autoSlide={true}
+            slideInterval={4000}
+            direction="vertical"
+          /> */}
+
+        </View>
       </ScrollView>
 
       <Button
@@ -90,8 +105,8 @@ const App = () => {
             message: 'This is a error message',
             type: 'error',
             animation: 'fadeIn',
-            position: 'bottom',
-            duration: 0,
+            position: 'top',
+            duration: 1000,
           })
         }
       />

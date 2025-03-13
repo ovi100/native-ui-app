@@ -13,7 +13,7 @@ const Toast = () => {
 
   useEffect(() => {
     toastInstance = {
-      show: ({ message, type = 'default', position = 'bottom', duration = 3000 }) => {
+      show: ({ message, type = 'default', position = 'top', duration = 3000 }) => {
         toastData.current = { message, type, position, duration };
 
         opacity.value = withTiming(1, { duration: 300 });
@@ -80,7 +80,7 @@ const getToastStyle = (type) => {
     case 'info':
       return { backgroundColor: '#2196F3' };
     default:
-      return { backgroundColor: '#333' };
+      return { backgroundColor: '#262626' };
   }
 };
 
