@@ -83,7 +83,7 @@ const tabs = [
 const images = [
   'https://placehold.jp/3d4070/ffffff/500x250.jpg?text=Image%201',
   'https://placehold.jp/3d4070/ffffff/500x250.jpg?text=Image%202',
-  'https://placehold.jp/3d4070/ffffff/500x250.jpg?text=Image%201',
+  'https://placehold.jp/3d4070/ffffff/500x250.jpg?text=Image%203',
 ];
 
 export {accordions, images, tabs};
