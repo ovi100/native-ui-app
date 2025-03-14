@@ -85,7 +85,11 @@ const App = () => {
         </View>
 
         <View className="carousels flex-col gap-5 mt-5">
-          <Carousel images={images} autoPlay={true} />
+          <Carousel
+            images={images}
+            autoPlay={false}
+            indicatorPosition="outside"
+          />
         </View>
       </ScrollView>
 

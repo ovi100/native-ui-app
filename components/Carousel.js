@@ -1,5 +1,5 @@
-import React, { useRef, useEffect, useState } from 'react';
-import { View, StyleSheet, Dimensions, Image, Pressable } from 'react-native';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { View, StyleSheet, Dimensions, Image, Pressable, TouchableOpacity } from 'react-native';
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
@@ -16,23 +16,24 @@ const Carousel = ({
   direction = 'horizontal',
   autoPlay = false,
   showControls = false,
-  controlStyles = null,
   showIndicators = true,
-  indicatorStyles = null,
+  indicatorType = 'capsules',
+  indicatorPosition = 'inside',
+  // indicatorStyles = null,
 }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const translateX = useSharedValue(0);
   const translateY = useSharedValue(0);
   const autoSlideTimer = useRef(null);
 
-  const startAutoSlide = () => {
+  const startAutoSlide = useCallback(() => {
     if (!autoPlay) { return; }
     autoSlideTimer.current = setInterval(() => {
       const nextIndex = (currentIndex + 1) % images.length;
       setCurrentIndex(nextIndex);
       updateAnimation(nextIndex);
     }, slideInterval);
-  };
+  }, [autoPlay, currentIndex, images.length, slideInterval, updateAnimation]);
 
   const stopAutoSlide = () => {
     if (autoSlideTimer.current) {
@@ -44,16 +45,15 @@ const Carousel = ({
   useEffect(() => {
     startAutoSlide();
     return () => stopAutoSlide();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentIndex]);
+  }, [startAutoSlide]);
 
-  const updateAnimation = (index) => {
+  const updateAnimation = useCallback((index) => {
     if (direction === 'horizontal') {
       translateX.value = withTiming(-index * width, { duration: 300 });
     } else {
       translateY.value = withTiming(-index * width, { duration: 300 });
     }
-  };
+  }, [direction, translateX, translateY]);
 
   const animatedStyle = useAnimatedStyle(() => {
     return {
@@ -65,7 +65,7 @@ const Carousel = ({
   });
 
   const handleSwipe = (dir) => {
-    stopAutoSlide();
+    autoPlay && stopAutoSlide();
     let newIndex;
     if (dir === 'left') {
       newIndex = (currentIndex + 1) % images.length;
@@ -74,7 +74,14 @@ const Carousel = ({
     }
     setCurrentIndex(newIndex);
     updateAnimation(newIndex);
-    startAutoSlide();
+    autoPlay && startAutoSlide();
+  };
+
+  const handleIndicator = (index) => {
+    autoPlay && stopAutoSlide();
+    setCurrentIndex(index);
+    updateAnimation(index);
+    autoPlay && startAutoSlide();
   };
 
   const panGesture = Gesture.Pan()
@@ -93,6 +100,36 @@ const Carousel = ({
         }
       }
     });
+
+  const getIndicatorPositionStyles = (pos) => {
+    if (pos === 'inside') {
+      return { bottom: 20 };
+    } else {
+      return { bottom: -20 };
+    }
+  };
+
+  const getIndicatorStyles = (type) => {
+    let styles = {
+      backgroundColor: '#ccc',
+      marginHorizontal: 5,
+    };
+    if (type === 'dots') {
+      return {
+        width: 10,
+        height: 10,
+        borderRadius: '50%',
+        ...styles,
+      };
+    } else {
+      return {
+        width: 25,
+        height: 5,
+        borderRadius: type === 'bars' ? 0 : 100,
+        ...styles,
+      };
+    }
+  };
 
   return (
     <GestureHandlerRootView style={styles.root}>
@@ -125,14 +162,15 @@ const Carousel = ({
           </View>
         )}
         {showIndicators && (
-          <View style={styles.pagination}>
+          <View style={[styles.indicators, getIndicatorPositionStyles(indicatorPosition)]}>
             {images.map((_, index) => (
-              <View
+              <TouchableOpacity
                 key={index}
                 style={[
-                  styles.paginationDot,
-                  index === currentIndex && styles.activeDot,
+                  getIndicatorStyles(indicatorType),
+                  index === currentIndex && styles.active,
                 ]}
+                onPress={() => handleIndicator(index)}
               />
             ))}
           </View>
@@ -147,10 +185,10 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   container: {
+    position: 'relative',
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    position: 'relative',
   },
   slider: {
     flex: 1,
@@ -190,22 +228,14 @@ const styles = StyleSheet.create({
     borderRightWidth: 3,
     transform: [{ rotate: '-40deg' }],
   },
-  pagination: {
+  indicators: {
     position: 'absolute',
-    bottom: -20,
+    width: '100%',
     flexDirection: 'row',
     justifyContent: 'center',
-    width: '100%',
   },
-  paginationDot: {
-    width: 8,
-    height: 8,
-    borderRadius: 4,
-    backgroundColor: '#ccc',
-    marginHorizontal: 5,
-  },
-  activeDot: {
-    backgroundColor: '#fff',
+  active: {
+    backgroundColor: '#22c55e',
   },
 });
 
