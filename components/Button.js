@@ -88,7 +88,7 @@ const styles = StyleSheet.create({
     marginRight: 8,
   },
   buttonText: {
-    fontWeight: 'semibold',
+    fontWeight: 700,
   },
 });
 

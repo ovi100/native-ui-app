@@ -13,7 +13,6 @@ const { width } = Dimensions.get('window');
 const Carousel = ({
   images,
   slideInterval = 3000,
-  direction = 'horizontal',
   autoPlay = false,
   showControls = false,
   showIndicators = true,
@@ -23,7 +22,6 @@ const Carousel = ({
 }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const translateX = useSharedValue(0);
-  const translateY = useSharedValue(0);
   const autoSlideTimer = useRef(null);
 
   const startAutoSlide = useCallback(() => {
@@ -48,18 +46,13 @@ const Carousel = ({
   }, [startAutoSlide]);
 
   const updateAnimation = useCallback((index) => {
-    if (direction === 'horizontal') {
-      translateX.value = withTiming(-index * width, { duration: 300 });
-    } else {
-      translateY.value = withTiming(-index * width, { duration: 300 });
-    }
-  }, [direction, translateX, translateY]);
+    translateX.value = withTiming(-index * width, { duration: 300 });
+  }, [translateX]);
 
   const animatedStyle = useAnimatedStyle(() => {
     return {
       transform: [
         { translateX: translateX.value },
-        { translateY: translateY.value },
       ],
     };
   });
@@ -86,18 +79,10 @@ const Carousel = ({
 
   const panGesture = Gesture.Pan()
     .onEnd((event) => {
-      if (direction === 'horizontal') {
-        if (event.translationX < -50) {
-          runOnJS(handleSwipe)('left');
-        } else if (event.translationX > 50) {
-          runOnJS(handleSwipe)('right');
-        }
-      } else {
-        if (event.translationY < -50) {
-          runOnJS(handleSwipe)('up');
-        } else if (event.translationY > 50) {
-          runOnJS(handleSwipe)('down');
-        }
+      if (event.translationX < -50) {
+        runOnJS(handleSwipe)('left');
+      } else if (event.translationX > 50) {
+        runOnJS(handleSwipe)('right');
       }
     });
 
@@ -135,17 +120,14 @@ const Carousel = ({
     <GestureHandlerRootView style={styles.root}>
       <View style={styles.container}>
         <GestureDetector gesture={panGesture}>
-          <Animated.View
-            style={[
-              styles.slider,
-              animatedStyle,
-              // eslint-disable-next-line react-native/no-inline-styles
-              { flexDirection: direction === 'horizontal' ? 'row' : 'column' },
-            ]}
-          >
+          <Animated.View style={[styles.slider, animatedStyle]}>
             {images.map((image, index) => (
               <View key={index} style={styles.slide}>
-                <Image source={{ uri: image }} style={styles.image} />
+                {typeof image === 'string' ? (
+                  <Image source={{ uri: image }} style={styles.image} />
+                ) : (
+                  <Image source={image} style={styles.image} />
+                )}
               </View>
             ))}
           </Animated.View>
@@ -192,6 +174,7 @@ const styles = StyleSheet.create({
   },
   slider: {
     flex: 1,
+    flexDirection: 'row',
     width: width,
     height: '100%',
   },

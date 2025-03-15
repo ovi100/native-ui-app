@@ -1,5 +1,6 @@
 import React, {useCallback, useRef, useState} from 'react';
 import {
+  BackHandler,
   Dimensions,
   FlatList,
   Image,
@@ -23,9 +24,18 @@ import BottomSheet from '../components/BottomSheet';
 import {SafeAreaProvider, SafeAreaView} from 'react-native-safe-area-context';
 import Toast, {showToast} from '../components/Toast';
 import Carousel from '../components/Carousel';
+import Dialog from '../components/Dialog';
+import Modal from '../components/Modal';
+import {img1, img2, img3} from '../images';
+import OTPInput from '../components/OptInput';
+import RangeSlider from '../components/RangeSlider';
+import PriceRangeSlider from '../components/RangeSlider';
 
 const App = () => {
   // const [isChecked, setIsChecked] = useState(true);
+  const [isOpen, setIsOpen] = useState(false);
+  const [otp, setOtp] = useState('');
+  const [range, setRange] = useState(null);
   usePermissions();
   // const isDarkMode = useColorScheme() === 'dark';
   // const {height} = Dimensions.get('screen');
@@ -37,6 +47,12 @@ const App = () => {
 
   // console.log('is dark mode', isDarkMode);
   // console.log('device height', height, height * 0.8);
+
+  const newImages = [img1, img2, img3];
+
+  const handleRangeChange = (min, max) => {
+    setRange({min, max});
+  };
 
   return (
     // <SafeAreaProvider>
@@ -78,18 +94,34 @@ const App = () => {
           <ProgressBar />
           <ProgressBar size="large" />
         </View> */}
-        <View className="tabs flex-col gap-5 mt-5">
+        {/* <View className="tabs flex-col gap-5 mt-5">
           <Tab tabs={tabs} />
           <Tab tabs={tabs} tabTheme="square" variant="brand" />
           <Tab tabs={tabs} tabTheme="rounded" variant="primary" />
-        </View>
+        </View> */}
 
         <View className="carousels flex-col gap-5 mt-5">
           <Carousel
-            images={images}
-            autoPlay={false}
+            images={newImages}
+            autoPlay={true}
+            direction="vertical"
             indicatorPosition="outside"
           />
+        </View>
+        {/* <View className="opt flex-col gap-5 mt-5">
+          <Text>Enter OTP:</Text>
+          <OTPInput type="bar" onOtpChange={setOtp} />
+          <Text>OTP Entered: {otp}</Text>
+        </View> */}
+
+        <View className="range mt-16 px-5">
+          <RangeSlider
+            min={100}
+            max={2000}
+            step={100}
+            onChange={handleRangeChange}
+          />
+          <Text className="mt-3">Range value: {JSON.stringify(range)}</Text>
         </View>
       </ScrollView>
 
@@ -105,6 +137,23 @@ const App = () => {
           })
         }
       />
+
+      <Dialog
+        isOpen={isOpen}
+        modalHeader="Exit the app"
+        modalSubHeader="Press 'Cancel' to continue or 'Exit' to close the app."
+        onClose={() => setIsOpen(false)}
+        onSubmit={() => BackHandler.exitApp()}
+        leftButtonText="Cancel"
+        rightButtonText="Exit"
+      />
+
+      {/* <Modal
+        isOpen={isOpen}
+        header="This is a modal"
+        showCloseButton={true}
+        onPress={() => setIsOpen(false)}
+      /> */}
 
       {/* <BottomSheet
         ref={bottomSheetRef}
