@@ -1,4 +1,4 @@
-import React, {useCallback, useRef, useState} from 'react';
+import React, { useCallback, useRef, useState } from 'react';
 import {
   BackHandler,
   Dimensions,
@@ -19,17 +19,19 @@ import CircularProgress from '../components/CircularProgress';
 import ProgressBar from '../components/ProgressBar';
 import Tab from '../components/Tab';
 import Button from '../components/Button';
-import {accordions, images, tabs} from '../data';
+import { accordions, images, tabs } from '../data';
 import BottomSheet from '../components/BottomSheet';
-import {SafeAreaProvider, SafeAreaView} from 'react-native-safe-area-context';
-import Toast, {showToast} from '../components/Toast';
-import Carousel from '../components/Carousel';
+import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
+import Toast, { showToast } from '../components/Toast';
 import Dialog from '../components/Dialog';
 import Modal from '../components/Modal';
-import {img1, img2, img3} from '../images';
-import OTPInput from '../components/OptInput';
+import { img1, img2, img3 } from '../images';
+import OtpInput from '../components/OptInput';
 import RangeSlider from '../components/RangeSlider';
 import PriceRangeSlider from '../components/RangeSlider';
+import { Carousel } from 'halka-test';
+import Switch from '../components/Switch';
+import CircularTimer from '../components/CircularTimer';
 
 const App = () => {
   // const [isChecked, setIsChecked] = useState(true);
@@ -47,12 +49,14 @@ const App = () => {
 
   // console.log('is dark mode', isDarkMode);
   // console.log('device height', height, height * 0.8);
-
+  const [isEnabled, setIsEnabled] = useState(false);
   const newImages = [img1, img2, img3];
 
   const handleRangeChange = (min, max) => {
-    setRange({min, max});
+    setRange({ min, max });
   };
+
+  console.log(isEnabled);
 
   return (
     // <SafeAreaProvider>
@@ -108,13 +112,13 @@ const App = () => {
             indicatorPosition="outside"
           />
         </View>
-        {/* <View className="opt flex-col gap-5 mt-5">
+        <View className="opt flex-col gap-5 mt-5">
           <Text>Enter OTP:</Text>
-          <OTPInput type="bar" onOtpChange={setOtp} />
+          <OtpInput length={5.5} type="bar" onOtpChange={setOtp} />
           <Text>OTP Entered: {otp}</Text>
-        </View> */}
+        </View>
 
-        <View className="range mt-16 px-5">
+        {/* <View className="range mt-16 px-5">
           <RangeSlider
             min={100}
             max={2000}
@@ -122,7 +126,13 @@ const App = () => {
             onChange={handleRangeChange}
           />
           <Text className="mt-3">Range value: {JSON.stringify(range)}</Text>
+        </View> */}
+        <View className="switch mt-16 px-5">
+          <Switch size={30} onColor="green" offColor="gray" onToggle={setIsEnabled} />
         </View>
+
+        <CircularTimer time={35} />
+
       </ScrollView>
 
       <Button

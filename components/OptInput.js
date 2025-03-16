@@ -1,10 +1,15 @@
-import React, { useRef, useState } from 'react';
-import { TextInput, View, StyleSheet } from 'react-native';
+import React, {useEffect, useRef, useState} from 'react';
+import {TextInput, View, StyleSheet} from 'react-native';
 
-const OTPInput = ({ length = 4, type = 'box', focusColor = '', onOtpChange }) => {
-  const [otp, setOtp] = useState(Array(length).fill(''));
+const OtpInput = ({length = 4, type = 'box', focusColor = '', onOtpChange}) => {
+  length = Math.round(length);
+  const [otp, setOtp] = useState([]);
   const [focusedInput, setFocusedInput] = useState(null);
   const inputRefs = useRef([]);
+
+  useEffect(() => {
+    setOtp(Array(length).fill(''));
+  }, [length]);
 
   const handleChange = (text, index) => {
     // if (text.length > 1) {
@@ -50,23 +55,30 @@ const OTPInput = ({ length = 4, type = 'box', focusColor = '', onOtpChange }) =>
   //   }
   // };
 
-  const getInputStyles = (inputType) => {
-    let styles;
+  const getInputStyles = inputType => {
+    let size = 100 / length;
+    size = length > 5 ? size * 2.5 : length > 4 ? size * 2 : size * 1.7;
+    let styles = {
+      width: size,
+      height: size,
+    };
 
     if (inputType === 'box') {
       styles = {
+        ...styles,
         borderWidth: 1.5,
-        borderRadius: 6,
+        borderRadius: 4,
       };
     } else {
       styles = {
+        ...styles,
         borderBottomWidth: 2,
       };
     }
     return styles;
   };
 
-  const getFocusedStyles = (index) => {
+  const getFocusedStyles = index => {
     let styles;
     if (!focusColor) {
       styles = {
@@ -85,14 +97,14 @@ const OTPInput = ({ length = 4, type = 'box', focusColor = '', onOtpChange }) =>
       {otp.map((digit, index) => (
         <TextInput
           key={index}
-          ref={(el) => (inputRefs.current[index] = el)}
+          ref={el => (inputRefs.current[index] = el)}
           style={[styles.input, getInputStyles(type), getFocusedStyles(index)]}
           keyboardType="number-pad"
           maxLength={1}
           value={digit}
           onFocus={() => setFocusedInput(index)}
-          onChangeText={(text) => handleChange(text, index)}
-          onKeyPress={(e) => handleKeyPress(e, index)}
+          onChangeText={text => handleChange(text, index)}
+          onKeyPress={e => handleKeyPress(e, index)}
           autoFocus={index === 0}
         />
       ))}
@@ -107,12 +119,11 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   input: {
-    width: 50,
-    height: 50,
     textAlign: 'center',
     fontSize: 16,
-    marginHorizontal: 8,
+    marginHorizontal: 6,
+    verticalAlign: 'middle',
   },
 });
 
-export default OTPInput;
+export default OtpInput;

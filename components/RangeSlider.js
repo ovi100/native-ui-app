@@ -1,18 +1,22 @@
-import React, { useState } from 'react';
-import { View, Text, StyleSheet, Dimensions } from 'react-native';
+import React, {useState} from 'react';
+import {View, Text, StyleSheet, Dimensions} from 'react-native';
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
   withSpring,
   runOnJS,
 } from 'react-native-reanimated';
-import { Gesture, GestureDetector, GestureHandlerRootView } from 'react-native-gesture-handler';
+import {
+  Gesture,
+  GestureDetector,
+  GestureHandlerRootView,
+} from 'react-native-gesture-handler';
 
-const { width: DEVICE_WIDTH } = Dimensions.get('window');
+const {width: DEVICE_WIDTH} = Dimensions.get('window');
 const SLIDER_WIDTH = DEVICE_WIDTH - 40; // Add margin
 const THUMB_SIZE = 30;
 
-const RangeSlider = ({ min = 0, max = 1000, step = 50, onChange }) => {
+const RangeSlider = ({min = 0, max = 1000, step = 50, onChange}) => {
   const [minValue, setMinValue] = useState(min);
   const [maxValue, setMaxValue] = useState(max);
 
@@ -22,17 +26,22 @@ const RangeSlider = ({ min = 0, max = 1000, step = 50, onChange }) => {
   const minX = useSharedValue(0);
   const maxX = useSharedValue(SLIDER_WIDTH - THUMB_SIZE); // Ensure maxX starts within range
 
-  const snapToStep = (value) => {
+  const snapToStep = value => {
     'worklet';
     return Math.round(value / stepWidth) * stepWidth;
   };
 
   const minGesture = Gesture.Pan()
-    .onUpdate((event) => {
-      const newX = Math.min(Math.max(0, minX.value + event.translationX * 0.5), maxX.value - THUMB_SIZE);
+    .onUpdate(event => {
+      const newX = Math.min(
+        Math.max(0, minX.value + event.translationX * 0.5),
+        maxX.value - THUMB_SIZE,
+      );
       minX.value = snapToStep(newX);
 
-      const newMinValue = Math.round((minX.value / SLIDER_WIDTH) * (max - min) + min);
+      const newMinValue = Math.round(
+        (minX.value / SLIDER_WIDTH) * (max - min) + min,
+      );
       runOnJS(setMinValue)(newMinValue);
       runOnJS(onChange)?.(newMinValue, maxValue);
     })
@@ -41,40 +50,55 @@ const RangeSlider = ({ min = 0, max = 1000, step = 50, onChange }) => {
     });
 
   const maxGesture = Gesture.Pan()
-    .onUpdate((event) => {
-      const newX = Math.max(Math.min(SLIDER_WIDTH - THUMB_SIZE, maxX.value + event.translationX * 0.5), minX.value + THUMB_SIZE);
+    .onUpdate(event => {
+      const newX = Math.max(
+        Math.min(
+          SLIDER_WIDTH - THUMB_SIZE,
+          maxX.value + event.translationX * 0.5,
+        ),
+        minX.value + THUMB_SIZE,
+      );
       maxX.value = snapToStep(newX);
 
-      const newMaxValue = Math.round((maxX.value / SLIDER_WIDTH) * (max - min) + min);
+      const newMaxValue = Math.round(
+        (maxX.value / SLIDER_WIDTH) * (max - min) + min,
+      );
       runOnJS(setMaxValue)(newMaxValue);
       runOnJS(onChange)?.(minValue, newMaxValue);
     })
     .onEnd(() => {
-      maxX.value = withSpring(snapToStep(maxX.value)); // Use spring for smooth effect
+      maxX.value = withSpring(snapToStep(maxX.value));
     });
 
   const minThumbStyle = useAnimatedStyle(() => ({
-    transform: [{ translateX: minX.value }],
+    transform: [{translateX: minX.value}],
   }));
 
   const maxThumbStyle = useAnimatedStyle(() => ({
-    transform: [{ translateX: maxX.value }],
+    transform: [{translateX: maxX.value}],
   }));
+
+  const getDynamicWidth = () => ({
+    width: Math.max(THUMB_SIZE, maxX.value - minX.value),
+  });
 
   const activeTrackStyle = useAnimatedStyle(() => ({
     left: minX.value,
-    width: Math.max(THUMB_SIZE, maxX.value - minX.value), // Ensure active track never collapses or overflows
+    width: Math.max(THUMB_SIZE, maxX.value - minX.value),
   }));
+
+  console.log('screen width:', SLIDER_WIDTH);
+  console.log('dynamic width:', getDynamicWidth());
 
   return (
     <GestureHandlerRootView>
       <View style={styles.container}>
-        <View style={styles.labelContainer}>
-          <Text style={styles.label}>Min: {minValue}</Text>
-          <Text style={styles.label}>Max: {maxValue}</Text>
+        <View style={[styles.labelContainer]}>
+          <Text style={styles.label}>{minValue}</Text>
+          <Text style={styles.label}>{maxValue}</Text>
         </View>
 
-        <View style={styles.track}>
+        <View style={[styles.track]}>
           <Animated.View style={[styles.activeTrack, activeTrackStyle]} />
         </View>
 
@@ -85,7 +109,7 @@ const RangeSlider = ({ min = 0, max = 1000, step = 50, onChange }) => {
         </GestureDetector>
 
         <GestureDetector gesture={maxGesture}>
-          <Animated.View style={[styles.thumb, maxThumbStyle]}>
+          <Animated.View style={[styles.thumb, maxThumbStyle, {right: -2}]}>
             <View style={styles.thumbInner} />
           </Animated.View>
         </GestureDetector>
@@ -96,15 +120,17 @@ const RangeSlider = ({ min = 0, max = 1000, step = 50, onChange }) => {
 
 const styles = StyleSheet.create({
   container: {
+    position: 'relative',
     width: SLIDER_WIDTH,
     alignItems: 'center',
     marginTop: 20,
   },
   labelContainer: {
+    width: SLIDER_WIDTH - 20,
     flexDirection: 'row',
     justifyContent: 'space-between',
-    width: SLIDER_WIDTH,
-    marginBottom: 10,
+    marginBottom: 15,
+    marginLeft: -15,
   },
   label: {
     fontSize: 16,
@@ -121,10 +147,11 @@ const styles = StyleSheet.create({
     position: 'absolute',
     height: '100%',
     backgroundColor: '#007AFF',
+    zIndex: 0,
   },
   thumb: {
     position: 'absolute',
-    top: 20,
+    top: 25,
     left: -12,
     width: THUMB_SIZE,
     height: THUMB_SIZE,
@@ -132,7 +159,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(0,122,255, 0.2)',
     justifyContent: 'center',
     alignItems: 'center',
-    marginTop: 3,
+    zIndex: 999999,
   },
   thumbInner: {
     width: THUMB_SIZE - 10,
