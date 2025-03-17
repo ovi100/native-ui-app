@@ -5,7 +5,7 @@ import Animated, {useSharedValue, withTiming} from 'react-native-reanimated';
 const ProgressBar = ({
   size = 'medium',
   variant = 'default',
-  progress = 75,
+  progress = 0,
   duration = 1000,
   edge = 'rounded',
 }) => {

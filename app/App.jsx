@@ -1,195 +1,57 @@
-import React, { useCallback, useRef, useState } from 'react';
-import {
-  BackHandler,
-  Dimensions,
-  FlatList,
-  Image,
-  ScrollView,
-  StyleSheet,
-  Text,
-  useColorScheme,
-  View,
-} from 'react-native';
+import React, {useState} from 'react';
+import {Dimensions, StyleSheet, Text, View} from 'react-native';
 import usePermissions from '../hooks/usePermissions';
 import '../global.css';
-// import { Button } from 'halka-test';
-import Accordion from '../components/Accordion';
-import CheckBox from '../components/CheckBox';
-import CircularProgress from '../components/CircularProgress';
-import ProgressBar from '../components/ProgressBar';
-import Tab from '../components/Tab';
-import Button from '../components/Button';
-import { accordions, images, tabs } from '../data';
-import BottomSheet from '../components/BottomSheet';
-import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
-import Toast, { showToast } from '../components/Toast';
-import Dialog from '../components/Dialog';
-import Modal from '../components/Modal';
-import { img1, img2, img3 } from '../images';
-import OtpInput from '../components/OptInput';
-import RangeSlider from '../components/RangeSlider';
-import PriceRangeSlider from '../components/RangeSlider';
-import { Carousel } from 'halka-test';
-import Switch from '../components/Switch';
-import CircularTimer from '../components/CircularTimer';
+import {Button} from 'halka-test';
+import {GestureHandlerRootView} from 'react-native-gesture-handler';
+import Drawer from '../components/Drawer';
+import {img1, img2, img3} from '../images';
+import Carousel from '../components/Carousel';
+import Dropdown from '../components/Dropdown';
+const {width, height} = Dimensions.get('window');
 
 const App = () => {
-  // const [isChecked, setIsChecked] = useState(true);
-  const [isOpen, setIsOpen] = useState(false);
-  const [otp, setOtp] = useState('');
-  const [range, setRange] = useState(null);
   usePermissions();
-  // const isDarkMode = useColorScheme() === 'dark';
-  // const {height} = Dimensions.get('screen');
-  // const bottomSheetRef = useRef();
-
-  // const sheetHandler = useCallback(() => {
-  //   bottomSheetRef.current.expand();
-  // }, []);
-
-  // console.log('is dark mode', isDarkMode);
-  // console.log('device height', height, height * 0.8);
-  const [isEnabled, setIsEnabled] = useState(false);
+  const [drawerVisible, setDrawerVisible] = useState(false);
   const newImages = [img1, img2, img3];
-
-  const handleRangeChange = (val) => {
-    setRange(val);
-  };
-
-  console.log(isEnabled);
+  const [selectedValue, setSelectedValue] = useState(null);
+  const options = ['Option 1', 'Option 2', 'Option 3', 'Option 4', 'Option 5'];
 
   return (
-    // <SafeAreaProvider>
-    <View className="bg-white flex-1 p-5">
-      {/* <View className="mt-5">
-          <Button text="open sheet" variant="action" onPress={() => sheetHandler()} />
-        </View> */}
-      <ScrollView showsVerticalScrollIndicator={false}>
-        {/* {accordions.map((item, i) => {
-          return <Accordion item={item} variant="brand" key={i} />;
-        })}
-        <View className="buttons flex-col gap-5 mt-5">
-          <Button text="Button small" size="small" />
-          <Button text="Button default" />
-          <Button text="Button large" size="large" />
-        </View>
-        <View className="checkbox flex-row gap-5 mt-5">
-          <CheckBox
-            label="Small"
-            size="small"
-            checked={isChecked}
-            onChange={setIsChecked}
-          />
-          <CheckBox label="Medium" checked={isChecked} onChange={setIsChecked} />
-          <CheckBox
-            label="Large"
-            size="large"
-            checked={isChecked}
-            onChange={setIsChecked}
-          />
-        </View>
-        <View className="circular-progress flex-row gap-5 mt-5">
-          <CircularProgress size="small" />
-          <CircularProgress />
-          <CircularProgress size="large" />
-        </View>
-        <View className="progress flex-col gap-5 mt-5">
-          <ProgressBar size="small" />
-          <ProgressBar />
-          <ProgressBar size="large" />
-        </View> */}
-        {/* <View className="tabs flex-col gap-5 mt-5">
-          <Tab tabs={tabs} />
-          <Tab tabs={tabs} tabTheme="square" variant="brand" />
-          <Tab tabs={tabs} tabTheme="rounded" variant="primary" />
-        </View> */}
-
-        <View className="carousels flex-col gap-5 mt-5">
+    <GestureHandlerRootView className="">
+      <View className="bg-white flex-1 p-5">
+        {/* <View>
           <Carousel
+            autoPlay
             images={newImages}
-            autoPlay={true}
-            direction="vertical"
-            indicatorPosition="outside"
+            // indicatorPosition="outside"
+            indicatorType="dots"
           />
-        </View>
-        {/* <View className="opt flex-col gap-5 mt-5">
-          <Text>Enter OTP:</Text>
-          <OtpInput length={5.5} type="bar" onOtpChange={setOtp} />
-          <Text>OTP Entered: {otp}</Text>
         </View> */}
+        {/* <Button
+          text="Open Drawer"
+          variant="action"
+          onPress={() => setDrawerVisible(true)}
+        /> */}
 
-        <View className="range mt-16 px-5">
-          <RangeSlider
-            min={100}
-            max={500}
-            onChange={handleRangeChange}
-          />
-          <Text className="mt-3">Range value: {JSON.stringify(range)}</Text>
-        </View>
-        <View className="switch mt-16 px-5">
-          <Switch size={30} onColor="green" offColor="gray" onToggle={setIsEnabled} />
+        <View>
+          <Text>Selected: {selectedValue || 'None'}</Text>
+          <Dropdown options={options} onSelect={setSelectedValue} />
         </View>
 
-        <CircularTimer time={35} />
-
-      </ScrollView>
-
-      <Button
-        text="Show Success Toast"
-        onPress={() =>
-          showToast({
-            message: 'This is a error message',
-            type: 'error',
-            animation: 'fadeIn',
-            position: 'top',
-            duration: 1000,
-          })
-        }
-      />
-
-      <Dialog
-        isOpen={isOpen}
-        modalHeader="Exit the app"
-        modalSubHeader="Press 'Cancel' to continue or 'Exit' to close the app."
-        onClose={() => setIsOpen(false)}
-        onSubmit={() => BackHandler.exitApp()}
-        leftButtonText="Cancel"
-        rightButtonText="Exit"
-      />
-
-      {/* <Modal
-        isOpen={isOpen}
-        header="This is a modal"
-        showCloseButton={true}
-        onPress={() => setIsOpen(false)}
-      /> */}
-
-      {/* <BottomSheet
-        ref={bottomSheetRef}
-        activeHeight={height}
-        backgroundColor={'#f2f2f2'}
-        backDropColor={'black'}>
-        <View style={styles.container}>
-          <View style={styles.imageContaier}>
-            <Image
-              source={{ uri: 'https://placehold.jp/500x500.png' }}
-              style={styles.image}
-            />
+        <Drawer
+          visible={drawerVisible}
+          onClose={() => setDrawerVisible(false)}
+          position="left"
+          height={height}
+          width={width}>
+          <View style={{padding: 20}}>
+            <Text>Drawer Content</Text>
+            <Button text="Close" onPress={() => setDrawerVisible(false)} />
           </View>
-
-          <View style={styles.textContainer}>
-            <Text style={styles.text}>Royal Palm Sofa</Text>
-            <Text style={styles.text}>Vissle dark Blue/Kabusa dark Navy</Text>
-            <Text style={styles.textPrice}>Price: $100</Text>
-          </View>
-          <View>
-            <Button text="ADD TO CART" variant="success" />
-          </View>
-        </View>
-      </BottomSheet> */}
-      <Toast />
-    </View>
-    // </SafeAreaProvider>
+        </Drawer>
+      </View>
+    </GestureHandlerRootView>
   );
 };
 

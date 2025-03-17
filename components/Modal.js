@@ -7,6 +7,7 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
+import ButtonClose from './ButtonClose';
 const { width } = Dimensions.get('window');
 
 const demoContent = { color: 'black', padding: 16, textAlign: 'center' };
@@ -48,10 +49,7 @@ const Modal = ({
             <View style={styles.modalHeader}>
               <Text style={styles.headerText}>{header}</Text>
               {showCloseButton && (
-                <TouchableOpacity onPress={onPress} style={styles.closeButton}>
-                  <View style={[styles.closeBar, styles.closeBarPosition1]} />
-                  <View style={[styles.closeBar, styles.closeBarPosition2]} />
-                </TouchableOpacity>
+                <ButtonClose onPress={onPress} />
               )}
             </View>
           )}
@@ -91,23 +89,5 @@ const styles = StyleSheet.create({
     lineHeight: 24,
     textAlign: 'center',
     fontWeight: '600',
-  },
-  closeButton: {
-    position: 'relative',
-    marginLeft: 10,
-    padding: 4,
-  },
-  closeBar: {
-    backgroundColor: '#ccc',
-    width: 20,
-    height: 2,
-    borderRadius: 2,
-    margin: 2,
-  },
-  closeBarPosition1: {
-    transform: [{ translateX: 6 }, { translateY: 1 }, { rotate: '45deg' }],
-  },
-  closeBarPosition2: {
-    transform: [{ translateX: 6 }, { translateY: -5 }, { rotate: '-45deg' }],
   },
 });

@@ -1,7 +1,6 @@
-import React, {useEffect} from 'react';
-import {View, StyleSheet, Text, useWindowDimensions} from 'react-native';
+import React, { useCallback, useEffect } from 'react';
+import { View, StyleSheet, useWindowDimensions } from 'react-native';
 import {
-  GestureHandlerRootView,
   GestureDetector,
   Gesture,
 } from 'react-native-gesture-handler';
@@ -13,26 +12,31 @@ import Animated, {
   interpolateColor,
 } from 'react-native-reanimated';
 
-const CONTROLLER_SIZE = 20; // Circle controller size
+// Circle controller size
+const CONTROLLER_SIZE = 20;
 
-const RangeSlider = ({min = 0, max = 100, onChange}) => {
-  const {width} = useWindowDimensions();
-  const SLIDER_WIDTH = width * 0.9; // 90% of screen width
+const RangeSlider = ({ min = 0, max = 100, onChange }) => {
+  const { width } = useWindowDimensions();
+  const SLIDER_WIDTH = width * 0.9;
 
-  const translateXPercent = useSharedValue(0); // Store percentage (0 to 100)
+  const translateXPercent = useSharedValue(0);
   const isActive = useSharedValue(0); // 0 = default, 1 = touched
   const value = useSharedValue(min); // Store the slider value
 
   useEffect(() => {
+    updateOnChange();
+  }, [updateOnChange]);
+
+  const updateOnChange = useCallback(() => {
     runOnJS(onChange)?.({ value: min });
-  }, []);
+  }, [min, onChange]);
 
   const panGesture = Gesture.Pan()
     .onBegin(() => {
       isActive.value = 1; // Change color when touched
     })
     .onChange(event => {
-      // Convert movement to percentage
+      // Calculating movement to percentage
       const newXPercent = Math.max(
         0,
         Math.min(
@@ -42,13 +46,13 @@ const RangeSlider = ({min = 0, max = 100, onChange}) => {
       );
       translateXPercent.value = newXPercent;
 
-      // Convert percentage to actual value
+      // Calculating percentage to actual value
       value.value = Math.round((newXPercent / 100) * (max - min) + min);
 
       runOnJS(onChange)?.(value.value);
     })
     .onFinalize(() => {
-      isActive.value = 0; // Reset color when released
+      isActive.value = 0;
     });
 
   // Animated styles for the controller
@@ -75,25 +79,23 @@ const RangeSlider = ({min = 0, max = 100, onChange}) => {
     };
   });
 
-  // Calculate percentage of max value
+  // Calculating percentage of max value
   const animatedTrackStyle = useAnimatedStyle(() => ({
-    width: `${((value.value - min) / (max - min)) * 100}%`, // Set width in percentage
+    width: `${((value.value - min) / (max - min)) * 100}%`,
   }));
 
   return (
-    <GestureHandlerRootView style={styles.root}>
-      <View style={styles.container}>
-        <Animated.Text style={styles.valueText}>{value.value}</Animated.Text>
-        <View style={[styles.track, {width: SLIDER_WIDTH}]}>
-          <Animated.View style={[styles.filledTrack, animatedTrackStyle]} />
-          <GestureDetector gesture={panGesture}>
-            <Animated.View
-              style={[styles.controller, animatedControllerStyle]}
-            />
-          </GestureDetector>
-        </View>
+    <View style={styles.container}>
+      <Animated.Text style={styles.valueText}>{value.value}</Animated.Text>
+      <View style={[styles.track, { width: SLIDER_WIDTH }]}>
+        <Animated.View style={[styles.filledTrack, animatedTrackStyle]} />
+        <GestureDetector gesture={panGesture}>
+          <Animated.View
+            style={[styles.controller, animatedControllerStyle]}
+          />
+        </GestureDetector>
       </View>
-    </GestureHandlerRootView>
+    </View>
   );
 };
 
@@ -119,16 +121,16 @@ const styles = StyleSheet.create({
   controller: {
     width: CONTROLLER_SIZE,
     height: CONTROLLER_SIZE - 5,
-    borderRadius: 4, // Makes it a perfect circle
+    borderRadius: 4,
     position: 'absolute',
-    top: -5, // Centers it with the track
+    top: -5,
     justifyContent: 'center',
     alignItems: 'center',
     shadowColor: '#000',
     shadowOpacity: 0.2,
     shadowRadius: 4,
-    shadowOffset: {width: 0, height: 2},
-    elevation: 4, // Shadow for Android
+    shadowOffset: { width: 0, height: 2 },
+    elevation: 4,
   },
   valueText: {
     fontSize: 16,

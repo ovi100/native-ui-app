@@ -1,6 +1,7 @@
 import React, { useEffect, useRef } from 'react';
 import { Text, StyleSheet, TouchableOpacity, Dimensions, View } from 'react-native';
 import Animated, { useSharedValue, useAnimatedStyle, withTiming } from 'react-native-reanimated';
+import ButtonClose from './ButtonClose';
 
 const { width } = Dimensions.get('window');
 
@@ -47,10 +48,7 @@ const Toast = () => {
       ]}
     >
       <Text style={styles.toastText}>{toastData.current.message}</Text>
-      <TouchableOpacity onPress={hideToast} style={styles.closeButton}>
-        <View style={[styles.closeBar, styles.closeBarPosition1]} />
-        <View style={[styles.closeBar, styles.closeBarPosition2]} />
-      </TouchableOpacity>
+      <ButtonClose onPress={hideToast} />
     </Animated.View>
   );
 };
@@ -105,24 +103,6 @@ const styles = StyleSheet.create({
     fontSize: 16,
     flex: 1,
     textAlign: 'center',
-  },
-  closeButton: {
-    position: 'relative',
-    marginLeft: 10,
-    padding: 4,
-  },
-  closeBar: {
-    backgroundColor: '#fff',
-    width: 20,
-    height: 2,
-    borderRadius: 2,
-    margin: 2,
-  },
-  closeBarPosition1: {
-    transform: [{ translateX: 6 },{ translateY: 1 }, { rotate: '45deg' }],
-  },
-  closeBarPosition2: {
-    transform: [{ translateX: 6 },{ translateY: -5 },{ rotate: '-45deg' }],
   },
 });
 

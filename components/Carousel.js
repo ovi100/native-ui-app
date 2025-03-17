@@ -6,7 +6,7 @@ import Animated, {
   withTiming,
   runOnJS,
 } from 'react-native-reanimated';
-import { Gesture, GestureDetector, GestureHandlerRootView } from 'react-native-gesture-handler';
+import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 
 const { width } = Dimensions.get('window');
 
@@ -18,7 +18,6 @@ const Carousel = ({
   showIndicators = true,
   indicatorType = 'capsules',
   indicatorPosition = 'inside',
-  // indicatorStyles = null,
 }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const translateX = useSharedValue(0);
@@ -117,55 +116,50 @@ const Carousel = ({
   };
 
   return (
-    <GestureHandlerRootView style={styles.root}>
-      <View style={styles.container}>
-        <GestureDetector gesture={panGesture}>
-          <Animated.View style={[styles.slider, animatedStyle]}>
-            {images.map((image, index) => (
-              <View key={index} style={styles.slide}>
-                {typeof image === 'string' ? (
-                  <Image source={{ uri: image }} style={styles.image} />
-                ) : (
-                  <Image source={image} style={styles.image} />
-                )}
-              </View>
-            ))}
-          </Animated.View>
-        </GestureDetector>
-        {showControls && (
-          <View style={styles.controls}>
-            <Pressable onPress={() => handleSwipe('right')}>
-              <View style={styles.controlLeft} />
-            </Pressable>
+    <View style={styles.container}>
+      <GestureDetector gesture={panGesture}>
+        <Animated.View style={[styles.slider, animatedStyle]}>
+          {images.map((image, index) => (
+            <View key={index} style={styles.slide}>
+              {typeof image === 'string' ? (
+                <Image source={{ uri: image }} style={styles.image} />
+              ) : (
+                <Image source={image} style={styles.image} />
+              )}
+            </View>
+          ))}
+        </Animated.View>
+      </GestureDetector>
+      {showControls && (
+        <View style={styles.controls}>
+          <Pressable onPress={() => handleSwipe('right')}>
+            <View style={styles.controlLeft} />
+          </Pressable>
 
-            <Pressable onPress={() => handleSwipe('left')}>
-              <View style={styles.controlRight} />
-            </Pressable>
-          </View>
-        )}
-        {showIndicators && (
-          <View style={[styles.indicators, getIndicatorPositionStyles(indicatorPosition)]}>
-            {images.map((_, index) => (
-              <TouchableOpacity
-                key={index}
-                style={[
-                  getIndicatorStyles(indicatorType),
-                  index === currentIndex && styles.active,
-                ]}
-                onPress={() => handleIndicator(index)}
-              />
-            ))}
-          </View>
-        )}
-      </View>
-    </GestureHandlerRootView>
+          <Pressable onPress={() => handleSwipe('left')}>
+            <View style={styles.controlRight} />
+          </Pressable>
+        </View>
+      )}
+      {showIndicators && (
+        <View style={[styles.indicators, getIndicatorPositionStyles(indicatorPosition)]}>
+          {images.map((_, index) => (
+            <TouchableOpacity
+              key={index}
+              style={[
+                getIndicatorStyles(indicatorType),
+                index === currentIndex && styles.active,
+              ]}
+              onPress={() => handleIndicator(index)}
+            />
+          ))}
+        </View>
+      )}
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
-  root: {
-    flex: 1,
-  },
   container: {
     position: 'relative',
     flex: 1,
@@ -176,7 +170,7 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: 'row',
     width: width,
-    height: '100%',
+    height: 'auto',
   },
   slide: {
     width: width,

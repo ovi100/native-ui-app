@@ -16,4 +16,20 @@ let variants = {
   action: { bg: '#bae6fd', text: '#1d4ed8', iconColor: 'white' },
 };
 
-export { sizes, variants };
+const lighten = (hex, percent = 30) => {
+  // Remove '#' and parse RGB values
+  const r = parseInt(hex.slice(1, 3), 16);
+  const g = parseInt(hex.slice(3, 5), 16);
+  const b = parseInt(hex.slice(5, 7), 16);
+
+  // Lighten each channel by the given percentage
+  const light = value => Math.min(255, value + (255 - value) * (percent / 100));
+
+  // Convert back to hex
+  return `#${[r, g, b]
+    .map(light)
+    .map(v => Math.round(v).toString(16).padStart(2, '0'))
+    .join('')}`;
+};
+
+export { sizes, variants, lighten };

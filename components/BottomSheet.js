@@ -4,7 +4,7 @@ import {
   Dimensions,
   TouchableWithoutFeedback,
 } from 'react-native';
-import React, {forwardRef, useImperativeHandle, useCallback} from 'react';
+import React, { forwardRef, useImperativeHandle, useCallback } from 'react';
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
@@ -14,13 +14,12 @@ import Animated, {
 import {
   Gesture,
   GestureDetector,
-  GestureHandlerRootView,
 } from 'react-native-gesture-handler';
-import {useSafeAreaInsets} from 'react-native-safe-area-context';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 const BottomSheet = forwardRef(
-  ({activeHeight, children, backgroundColor, backDropColor}, ref) => {
+  ({ activeHeight, children, backgroundColor, backDropColor }, ref) => {
     const inset = useSafeAreaInsets();
-    const {height} = Dimensions.get('screen');
+    const { height } = Dimensions.get('screen');
     const newActiveHeight = height - activeHeight;
     const topAnimation = useSharedValue(height);
     const context = useSharedValue(0);
@@ -101,13 +100,13 @@ const BottomSheet = forwardRef(
       });
 
     return (
-      <GestureHandlerRootView style={styles.root}>
+      <View style={styles.root}>
         <TouchableWithoutFeedback onPress={() => close()}>
           <Animated.View
             style={[
               styles.backDrop,
               backDropAnimation,
-              {backgroundColor: backDropColor},
+              { backgroundColor: backDropColor },
             ]}
           />
         </TouchableWithoutFeedback>
@@ -130,7 +129,7 @@ const BottomSheet = forwardRef(
             {children}
           </Animated.View>
         </GestureDetector>
-      </GestureHandlerRootView>
+      </View>
     );
   },
 );
@@ -138,7 +137,7 @@ const BottomSheet = forwardRef(
 export default BottomSheet;
 
 const styles = StyleSheet.create({
-  root: {flex: 1},
+  root: { flex: 1 },
   container: {
     position: 'absolute',
     borderTopLeftRadius: 20,
