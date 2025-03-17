@@ -52,8 +52,8 @@ const App = () => {
   const [isEnabled, setIsEnabled] = useState(false);
   const newImages = [img1, img2, img3];
 
-  const handleRangeChange = (min, max) => {
-    setRange({ min, max });
+  const handleRangeChange = (val) => {
+    setRange(val);
   };
 
   console.log(isEnabled);
@@ -112,21 +112,20 @@ const App = () => {
             indicatorPosition="outside"
           />
         </View>
-        <View className="opt flex-col gap-5 mt-5">
+        {/* <View className="opt flex-col gap-5 mt-5">
           <Text>Enter OTP:</Text>
           <OtpInput length={5.5} type="bar" onOtpChange={setOtp} />
           <Text>OTP Entered: {otp}</Text>
-        </View>
+        </View> */}
 
-        {/* <View className="range mt-16 px-5">
+        <View className="range mt-16 px-5">
           <RangeSlider
             min={100}
-            max={2000}
-            step={100}
+            max={500}
             onChange={handleRangeChange}
           />
           <Text className="mt-3">Range value: {JSON.stringify(range)}</Text>
-        </View> */}
+        </View>
         <View className="switch mt-16 px-5">
           <Switch size={30} onColor="green" offColor="gray" onToggle={setIsEnabled} />
         </View>

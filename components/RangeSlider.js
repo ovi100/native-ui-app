@@ -1,173 +1,139 @@
-import React, {useState} from 'react';
-import {View, Text, StyleSheet, Dimensions} from 'react-native';
+import React, {useEffect} from 'react';
+import {View, StyleSheet, Text, useWindowDimensions} from 'react-native';
+import {
+  GestureHandlerRootView,
+  GestureDetector,
+  Gesture,
+} from 'react-native-gesture-handler';
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
   withSpring,
   runOnJS,
+  interpolateColor,
 } from 'react-native-reanimated';
-import {
-  Gesture,
-  GestureDetector,
-  GestureHandlerRootView,
-} from 'react-native-gesture-handler';
 
-const {width: DEVICE_WIDTH} = Dimensions.get('window');
-const SLIDER_WIDTH = DEVICE_WIDTH - 40; // Add margin
-const THUMB_SIZE = 30;
+const CONTROLLER_SIZE = 20; // Circle controller size
 
-const RangeSlider = ({min = 0, max = 1000, step = 50, onChange}) => {
-  const [minValue, setMinValue] = useState(min);
-  const [maxValue, setMaxValue] = useState(max);
+const RangeSlider = ({min = 0, max = 100, onChange}) => {
+  const {width} = useWindowDimensions();
+  const SLIDER_WIDTH = width * 0.9; // 90% of screen width
 
-  const stepsCount = Math.floor((max - min) / step);
-  const stepWidth = SLIDER_WIDTH / stepsCount;
+  const translateXPercent = useSharedValue(0); // Store percentage (0 to 100)
+  const isActive = useSharedValue(0); // 0 = default, 1 = touched
+  const value = useSharedValue(min); // Store the slider value
 
-  const minX = useSharedValue(0);
-  const maxX = useSharedValue(SLIDER_WIDTH - THUMB_SIZE); // Ensure maxX starts within range
+  useEffect(() => {
+    runOnJS(onChange)?.({ value: min });
+  }, []);
 
-  const snapToStep = value => {
-    'worklet';
-    return Math.round(value / stepWidth) * stepWidth;
-  };
-
-  const minGesture = Gesture.Pan()
-    .onUpdate(event => {
-      const newX = Math.min(
-        Math.max(0, minX.value + event.translationX * 0.5),
-        maxX.value - THUMB_SIZE,
-      );
-      minX.value = snapToStep(newX);
-
-      const newMinValue = Math.round(
-        (minX.value / SLIDER_WIDTH) * (max - min) + min,
-      );
-      runOnJS(setMinValue)(newMinValue);
-      runOnJS(onChange)?.(newMinValue, maxValue);
+  const panGesture = Gesture.Pan()
+    .onBegin(() => {
+      isActive.value = 1; // Change color when touched
     })
-    .onEnd(() => {
-      minX.value = withSpring(snapToStep(minX.value)); // Use spring for smooth effect
-    });
-
-  const maxGesture = Gesture.Pan()
-    .onUpdate(event => {
-      const newX = Math.max(
+    .onChange(event => {
+      // Convert movement to percentage
+      const newXPercent = Math.max(
+        0,
         Math.min(
-          SLIDER_WIDTH - THUMB_SIZE,
-          maxX.value + event.translationX * 0.5,
+          translateXPercent.value + (event.changeX / SLIDER_WIDTH) * 100,
+          100,
         ),
-        minX.value + THUMB_SIZE,
       );
-      maxX.value = snapToStep(newX);
+      translateXPercent.value = newXPercent;
 
-      const newMaxValue = Math.round(
-        (maxX.value / SLIDER_WIDTH) * (max - min) + min,
-      );
-      runOnJS(setMaxValue)(newMaxValue);
-      runOnJS(onChange)?.(minValue, newMaxValue);
+      // Convert percentage to actual value
+      value.value = Math.round((newXPercent / 100) * (max - min) + min);
+
+      runOnJS(onChange)?.(value.value);
     })
-    .onEnd(() => {
-      maxX.value = withSpring(snapToStep(maxX.value));
+    .onFinalize(() => {
+      isActive.value = 0; // Reset color when released
     });
 
-  const minThumbStyle = useAnimatedStyle(() => ({
-    transform: [{translateX: minX.value}],
-  }));
-
-  const maxThumbStyle = useAnimatedStyle(() => ({
-    transform: [{translateX: maxX.value}],
-  }));
-
-  const getDynamicWidth = () => ({
-    width: Math.max(THUMB_SIZE, maxX.value - minX.value),
+  // Animated styles for the controller
+  const animatedControllerStyle = useAnimatedStyle(() => {
+    const x = translateXPercent.value;
+    const trackValue =
+      x > 0
+        ? (x / 100) * SLIDER_WIDTH - CONTROLLER_SIZE
+        : (x / 100) * SLIDER_WIDTH;
+    return {
+      transform: [
+        {
+          translateX: withSpring(trackValue, {
+            damping: 10,
+            stiffness: 100,
+          }),
+        },
+      ],
+      backgroundColor: interpolateColor(
+        isActive.value,
+        [0, 1],
+        ['#007AFF', '#FF3B30'],
+      ), // Blue → Red
+    };
   });
 
-  const activeTrackStyle = useAnimatedStyle(() => ({
-    left: minX.value,
-    width: Math.max(THUMB_SIZE, maxX.value - minX.value),
+  // Calculate percentage of max value
+  const animatedTrackStyle = useAnimatedStyle(() => ({
+    width: `${((value.value - min) / (max - min)) * 100}%`, // Set width in percentage
   }));
 
-  console.log('screen width:', SLIDER_WIDTH);
-  console.log('dynamic width:', getDynamicWidth());
-
   return (
-    <GestureHandlerRootView>
+    <GestureHandlerRootView style={styles.root}>
       <View style={styles.container}>
-        <View style={[styles.labelContainer]}>
-          <Text style={styles.label}>{minValue}</Text>
-          <Text style={styles.label}>{maxValue}</Text>
+        <Animated.Text style={styles.valueText}>{value.value}</Animated.Text>
+        <View style={[styles.track, {width: SLIDER_WIDTH}]}>
+          <Animated.View style={[styles.filledTrack, animatedTrackStyle]} />
+          <GestureDetector gesture={panGesture}>
+            <Animated.View
+              style={[styles.controller, animatedControllerStyle]}
+            />
+          </GestureDetector>
         </View>
-
-        <View style={[styles.track]}>
-          <Animated.View style={[styles.activeTrack, activeTrackStyle]} />
-        </View>
-
-        <GestureDetector gesture={minGesture}>
-          <Animated.View style={[styles.thumb, minThumbStyle]}>
-            <View style={styles.thumbInner} />
-          </Animated.View>
-        </GestureDetector>
-
-        <GestureDetector gesture={maxGesture}>
-          <Animated.View style={[styles.thumb, maxThumbStyle, {right: -2}]}>
-            <View style={styles.thumbInner} />
-          </Animated.View>
-        </GestureDetector>
       </View>
     </GestureHandlerRootView>
   );
 };
 
 const styles = StyleSheet.create({
+  root: {
+    flex: 1,
+  },
   container: {
-    position: 'relative',
-    width: SLIDER_WIDTH,
     alignItems: 'center',
-    marginTop: 20,
-  },
-  labelContainer: {
-    width: SLIDER_WIDTH - 20,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginBottom: 15,
-    marginLeft: -15,
-  },
-  label: {
-    fontSize: 16,
-    fontWeight: 'bold',
   },
   track: {
-    width: SLIDER_WIDTH - THUMB_SIZE,
     height: 6,
     backgroundColor: '#ddd',
     borderRadius: 3,
-    position: 'relative',
+    marginTop: 10,
   },
-  activeTrack: {
-    position: 'absolute',
-    height: '100%',
+  filledTrack: {
+    height: 6,
     backgroundColor: '#007AFF',
-    zIndex: 0,
-  },
-  thumb: {
     position: 'absolute',
-    top: 25,
-    left: -12,
-    width: THUMB_SIZE,
-    height: THUMB_SIZE,
-    borderRadius: THUMB_SIZE / 2,
-    backgroundColor: 'rgba(0,122,255, 0.2)',
+    borderRadius: 3,
+  },
+  controller: {
+    width: CONTROLLER_SIZE,
+    height: CONTROLLER_SIZE - 5,
+    borderRadius: 4, // Makes it a perfect circle
+    position: 'absolute',
+    top: -5, // Centers it with the track
     justifyContent: 'center',
     alignItems: 'center',
-    zIndex: 999999,
+    shadowColor: '#000',
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
+    shadowOffset: {width: 0, height: 2},
+    elevation: 4, // Shadow for Android
   },
-  thumbInner: {
-    width: THUMB_SIZE - 10,
-    height: THUMB_SIZE - 10,
-    borderRadius: (THUMB_SIZE - 10) / 2,
-    backgroundColor: '#007AFF',
-    justifyContent: 'center',
-    alignItems: 'center',
+  valueText: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    marginBottom: 10,
   },
 });
 
