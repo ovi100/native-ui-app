@@ -1,14 +1,15 @@
-import React, {useState} from 'react';
-import {Dimensions, StyleSheet, Text, View} from 'react-native';
+import React, { useState } from 'react';
+import { Dimensions, StyleSheet, Text, View } from 'react-native';
 import usePermissions from '../hooks/usePermissions';
 import '../global.css';
-import {Button} from 'halka-test';
-import {GestureHandlerRootView} from 'react-native-gesture-handler';
+import { Button } from 'halka-test';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import Drawer from '../components/Drawer';
-import {img1, img2, img3} from '../images';
+import { img1, img2, img3 } from '../images';
 import Carousel from '../components/Carousel';
 import Dropdown from '../components/Dropdown';
-const {width, height} = Dimensions.get('window');
+import PendingBar from '../components/PendingBar';
+const { width, height } = Dimensions.get('window');
 
 const App = () => {
   usePermissions();
@@ -19,6 +20,7 @@ const App = () => {
 
   return (
     <GestureHandlerRootView className="">
+      <PendingBar duration={2000} />
       <View className="bg-white flex-1 p-5">
         {/* <View>
           <Carousel
@@ -28,11 +30,11 @@ const App = () => {
             indicatorType="dots"
           />
         </View> */}
-        {/* <Button
+        <Button
           text="Open Drawer"
           variant="action"
           onPress={() => setDrawerVisible(true)}
-        /> */}
+        />
 
         <View>
           <Text>Selected: {selectedValue || 'None'}</Text>
@@ -42,10 +44,11 @@ const App = () => {
         <Drawer
           visible={drawerVisible}
           onClose={() => setDrawerVisible(false)}
-          position="left"
+          position="bottom"
           height={height}
-          width={width}>
-          <View style={{padding: 20}}>
+        // width={width}
+        >
+          <View style={{ padding: 20 }}>
             <Text>Drawer Content</Text>
             <Button text="Close" onPress={() => setDrawerVisible(false)} />
           </View>

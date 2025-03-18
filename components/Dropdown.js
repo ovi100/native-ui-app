@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, {useState} from 'react';
 import {
   View,
   Text,
@@ -27,16 +27,19 @@ const Dropdown = ({
 
   const toggleDropdown = () => {
     setOpen(!open);
-    height.value = withTiming(open ? 0 : searchable ? (options.length * 45) + 50 : options.length * 45, { duration: 300 });
-    rotateValue.value = withTiming(open ? 45 : 225, { duration: 300 });
+    height.value = withTiming(
+      open ? 0 : searchable ? options.length * 45 + 50 : options.length * 45,
+      {duration: 300},
+    );
+    rotateValue.value = withTiming(open ? 45 : 225, {duration: 300});
   };
 
-  const handleSelect = (option) => {
+  const handleSelect = option => {
     setSelected(option);
     setSearchText('');
     setOpen(false);
-    height.value = withTiming(0, { duration: 300 });
-    rotateValue.value = withTiming(0, { duration: 300 });
+    height.value = withTiming(0, {duration: 300});
+    rotateValue.value = withTiming(0, {duration: 300});
     onSelect(option);
   };
 
@@ -45,11 +48,11 @@ const Dropdown = ({
   }));
 
   const rotateStyle = useAnimatedStyle(() => ({
-    transform: [{ rotate: `${rotateValue.value}deg` }],
+    transform: [{rotate: `${rotateValue.value}deg`}],
   }));
 
-  const filteredOptions = options.filter((item) =>
-    item.toLowerCase().includes(searchText.toLowerCase())
+  const filteredOptions = options.filter(item =>
+    item.toLowerCase().includes(searchText.toLowerCase()),
   );
 
   return (
@@ -66,19 +69,26 @@ const Dropdown = ({
             placeholder="Search options"
             placeholderTextColor="#aaa"
             value={searchText}
+            autoFocus={open}
             onChangeText={setSearchText}
           />
         )}
         {open && (
           <FlatList
             data={searchable ? filteredOptions : options}
-            keyExtractor={(item) => item}
-            renderItem={({ item }) => (
-              <TouchableOpacity onPress={() => handleSelect(item)} style={styles.option}>
+            keyExtractor={item => item}
+            renderItem={({item}) => (
+              <TouchableOpacity
+                onPress={() => handleSelect(item)}
+                style={styles.option}>
                 <Text style={styles.text}>{item}</Text>
               </TouchableOpacity>
             )}
-            ListEmptyComponent={searchable && <Text style={styles.noResults}>No options found</Text>}
+            ListEmptyComponent={
+              searchable && (
+                <Text style={styles.noResults}>No options found</Text>
+              )
+            }
           />
         )}
       </Animated.View>
@@ -107,14 +117,15 @@ const styles = StyleSheet.create({
     color: '#333',
   },
   dropdown: {
-    // marginTop: 8,
+    marginTop: 8,
     overflow: 'hidden',
-    borderBottomLeftRadius: 8,
-    borderBottomRightRadius: 8,
+    borderRadius: 8,
+    // borderBottomLeftRadius: 8,
+    // borderBottomRightRadius: 8,
     backgroundColor: 'white',
     shadowColor: '#000',
     shadowOpacity: 0.1,
-    shadowOffset: { width: 0, height: 2 },
+    shadowOffset: {width: 0, height: 2},
     shadowRadius: 4,
     elevation: 2,
   },
@@ -124,6 +135,7 @@ const styles = StyleSheet.create({
     borderColor: '#333',
     borderBottomWidth: 2,
     borderRightWidth: 2,
+    transform: [{rotate: '45deg'}],
   },
   searchInput: {
     padding: 10,
