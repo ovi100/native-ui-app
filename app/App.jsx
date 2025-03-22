@@ -1,58 +1,37 @@
-import React, { useState } from 'react';
-import { Dimensions, StyleSheet, Text, View } from 'react-native';
+import React, {useState} from 'react';
+import {
+  Dimensions,
+  Pressable,
+  SafeAreaView,
+  StyleSheet,
+  Text,
+  View,
+} from 'react-native';
 import usePermissions from '../hooks/usePermissions';
 import '../global.css';
-import { Button } from 'halka-test';
-import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import {Button} from 'halka-test';
+import {GestureHandlerRootView} from 'react-native-gesture-handler';
 import Drawer from '../components/Drawer';
-import { img1, img2, img3 } from '../images';
-import Carousel from '../components/Carousel';
 import Dropdown from '../components/Dropdown';
-import PendingBar from '../components/PendingBar';
-const { width, height } = Dimensions.get('window');
+import Menu from '../components/Menu';
+const {width, height} = Dimensions.get('window');
 
 const App = () => {
   usePermissions();
-  const [drawerVisible, setDrawerVisible] = useState(false);
-  const newImages = [img1, img2, img3];
+  // const [drawerVisible, setDrawerVisible] = useState(false);
+  const [menuVisible, setMenuVisible] = useState(false);
   const [selectedValue, setSelectedValue] = useState(null);
   const options = ['Option 1', 'Option 2', 'Option 3', 'Option 4', 'Option 5'];
+  const menuItems = [
+    {label: 'Option 1', onPress: () => console.log('Option 1 pressed')},
+    {label: 'Option 2', onPress: () => console.log('Option 2 pressed')},
+    {label: 'Option 3', onPress: () => console.log('Option 3 pressed')},
+  ];
 
   return (
     <GestureHandlerRootView className="">
-      <PendingBar duration={2000} />
       <View className="bg-white flex-1 p-5">
-        {/* <View>
-          <Carousel
-            autoPlay
-            images={newImages}
-            // indicatorPosition="outside"
-            indicatorType="dots"
-          />
-        </View> */}
-        <Button
-          text="Open Drawer"
-          variant="action"
-          onPress={() => setDrawerVisible(true)}
-        />
-
-        <View>
-          <Text>Selected: {selectedValue || 'None'}</Text>
-          <Dropdown options={options} onSelect={setSelectedValue} />
-        </View>
-
-        <Drawer
-          visible={drawerVisible}
-          onClose={() => setDrawerVisible(false)}
-          position="bottom"
-          height={height}
-        // width={width}
-        >
-          <View style={{ padding: 20 }}>
-            <Text>Drawer Content</Text>
-            <Button text="Close" onPress={() => setDrawerVisible(false)} />
-          </View>
-        </Drawer>
+        <Menu items={menuItems} />
       </View>
     </GestureHandlerRootView>
   );

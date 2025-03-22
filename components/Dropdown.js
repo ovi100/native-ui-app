@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, { useState } from 'react';
 import {
   View,
   Text,
@@ -23,23 +23,23 @@ const Dropdown = ({
   const [open, setOpen] = useState(false);
   const [searchText, setSearchText] = useState('');
   const height = useSharedValue(0);
-  const rotateValue = useSharedValue(0);
+  const rotateValue = useSharedValue(45);
 
   const toggleDropdown = () => {
     setOpen(!open);
     height.value = withTiming(
       open ? 0 : searchable ? options.length * 45 + 50 : options.length * 45,
-      {duration: 300},
+      { duration: 300 },
     );
-    rotateValue.value = withTiming(open ? 45 : 225, {duration: 300});
+    rotateValue.value = withTiming(open ? 45 : 225, { duration: 300 });
   };
 
   const handleSelect = option => {
     setSelected(option);
     setSearchText('');
     setOpen(false);
-    height.value = withTiming(0, {duration: 300});
-    rotateValue.value = withTiming(0, {duration: 300});
+    height.value = withTiming(0, { duration: 300 });
+    rotateValue.value = withTiming(45, { duration: 300 });
     onSelect(option);
   };
 
@@ -48,7 +48,7 @@ const Dropdown = ({
   }));
 
   const rotateStyle = useAnimatedStyle(() => ({
-    transform: [{rotate: `${rotateValue.value}deg`}],
+    transform: [{ rotate: `${rotateValue.value}deg` }],
   }));
 
   const filteredOptions = options.filter(item =>
@@ -77,11 +77,12 @@ const Dropdown = ({
           <FlatList
             data={searchable ? filteredOptions : options}
             keyExtractor={item => item}
-            renderItem={({item}) => (
+            renderItem={({ item }) => (
               <TouchableOpacity
                 onPress={() => handleSelect(item)}
                 style={styles.option}>
                 <Text style={styles.text}>{item}</Text>
+                {selected === item && <View style={styles.sign} />}
               </TouchableOpacity>
             )}
             ListEmptyComponent={
@@ -125,7 +126,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
     shadowColor: '#000',
     shadowOpacity: 0.1,
-    shadowOffset: {width: 0, height: 2},
+    shadowOffset: { width: 0, height: 2 },
     shadowRadius: 4,
     elevation: 2,
   },
@@ -135,7 +136,6 @@ const styles = StyleSheet.create({
     borderColor: '#333',
     borderBottomWidth: 2,
     borderRightWidth: 2,
-    transform: [{rotate: '45deg'}],
   },
   searchInput: {
     padding: 10,
@@ -146,6 +146,18 @@ const styles = StyleSheet.create({
     padding: 12,
     borderBottomWidth: 1,
     borderBottomColor: '#eee',
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  sign: {
+    width: 8,
+    height: 14,
+    borderBottomWidth: 2.5,
+    borderRightWidth: 2.5,
+    borderColor: 'green',
+    transform: [{ rotate: '40deg' }],
+    marginRight: 10,
   },
   noResults: {
     padding: 12,

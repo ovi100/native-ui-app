@@ -18,9 +18,6 @@ const Drawer = ({
   width: customWidth,
   height: customHeight,
 }) => {
-  // const drawerSize =
-  //   size || (position === 'top' || position === 'bottom' ? height * 0.4 : width * 0.7);
-  // Default height: 40% of screen height and width: 70% of screen width
   const drawerSize =
     position === 'top' || position === 'bottom'
       ? customHeight || height * 0.4
@@ -90,9 +87,19 @@ const Drawer = ({
     }
   }, [closeDrawer, openDrawer, visible]);
 
+  const showOverlay = () => {
+    if (position === 'top' || position === 'bottom') {
+      return height !== customHeight;
+    } else {
+      return width !== customWidth;
+    }
+  };
+
+  console.log('overlay condition', showOverlay());
+
   return (
     <View style={styles.container}>
-      {visible && <Pressable style={styles.overlay} onPress={closeDrawer} />}
+      {visible && showOverlay() && <Pressable style={styles.overlay} onPress={closeDrawer} />}
       <GestureDetector gesture={gesture}>
         <Animated.View style={[styles.drawer, getDrawerStyle(), animatedStyle]}>
           {children}
