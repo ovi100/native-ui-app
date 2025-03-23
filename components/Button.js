@@ -6,7 +6,7 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import {sizes, variants} from './common';
+import {sizes, variants} from '../lib/common';
 
 const Button = ({
   size = 'medium',

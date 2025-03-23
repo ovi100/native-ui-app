@@ -12,12 +12,14 @@ import Animated, {
   withTiming,
   useAnimatedStyle,
 } from 'react-native-reanimated';
+import { elevations } from '../lib/common';
 
 const Dropdown = ({
   options,
   onSelect,
   placeholder = 'Select an option',
   searchable = true,
+  elevation = 3,
 }) => {
   const [selected, setSelected] = useState(null);
   const [open, setOpen] = useState(false);
@@ -62,7 +64,7 @@ const Dropdown = ({
         <Animated.View style={[styles.icon, rotateStyle]} />
       </TouchableOpacity>
 
-      <Animated.View style={[styles.dropdown, animatedStyle]}>
+      <Animated.View style={[styles.dropdown, elevations[elevation], animatedStyle]}>
         {open && searchable && (
           <TextInput
             style={styles.searchInput}
@@ -124,11 +126,6 @@ const styles = StyleSheet.create({
     // borderBottomLeftRadius: 8,
     // borderBottomRightRadius: 8,
     backgroundColor: 'white',
-    shadowColor: '#000',
-    shadowOpacity: 0.1,
-    shadowOffset: { width: 0, height: 2 },
-    shadowRadius: 4,
-    elevation: 2,
   },
   icon: {
     width: 10,

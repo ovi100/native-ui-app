@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import { Pressable, View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import Animated, { FadeIn, FadeOut } from 'react-native-reanimated';
+import { elevations } from '../lib/common';
 
-const Menu = ({ items, showDivider = true }) => {
+const Menu = ({ items, elevation = 3, showDivider = true }) => {
   const [isVisible, setIsVisible] = useState(false);
   const [buttonLayout, setButtonLayout] = useState({ x: 0, y: 0, width: 0, height: 0 });
 
@@ -37,6 +38,7 @@ const Menu = ({ items, showDivider = true }) => {
               top: buttonLayout.y + buttonLayout.height, // Position below the button
               left: buttonLayout.x, // Align with the button's left edge
             },
+            elevations[elevation],
           ]}
           entering={FadeIn.duration(300)}
           exiting={FadeOut.duration(300)}
@@ -62,6 +64,7 @@ const Menu = ({ items, showDivider = true }) => {
   );
 };
 
+
 const styles = StyleSheet.create({
   container: {
     position: 'relative',
@@ -77,11 +80,6 @@ const styles = StyleSheet.create({
     position: 'absolute',
     backgroundColor: 'white',
     borderRadius: 5,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.8,
-    shadowRadius: 2,
-    elevation: 5,
     paddingVertical: 10,
   },
   menuItem: {

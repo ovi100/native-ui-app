@@ -17,7 +17,7 @@ import {
   GestureDetector,
   Gesture,
 } from 'react-native-gesture-handler';
-import { lighten } from './common';
+import { lighten } from '../lib/common';
 
 const { width } = Dimensions.get('window');
 

@@ -10,7 +10,7 @@ import Animated, {
   withTiming,
 } from 'react-native-reanimated';
 import Icon from 'react-native-vector-icons/Ionicons';
-import {sizes, variants} from './common';
+import {sizes, variants} from '../lib/common';
 
 const accordionStyle = {color: '#fff', fontSize: 14};
 

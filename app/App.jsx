@@ -14,6 +14,8 @@ import {GestureHandlerRootView} from 'react-native-gesture-handler';
 import Drawer from '../components/Drawer';
 import Dropdown from '../components/Dropdown';
 import Menu from '../components/Menu';
+import Box from '../components/Box';
+import SwipeTabs from '../components/SwipeTabs';
 const {width, height} = Dimensions.get('window');
 
 const App = () => {
@@ -28,10 +30,46 @@ const App = () => {
     {label: 'Option 3', onPress: () => console.log('Option 3 pressed')},
   ];
 
+  const tabs = [
+    {
+      label: 'Details',
+      content: (
+        <View>
+          <Text style={{color: 'white'}}>Details Content</Text>
+        </View>
+      ),
+    },
+    {
+      label: 'Odds',
+      content: (
+        <View>
+          <Text style={{color: 'white'}}>Odds Content</Text>
+        </View>
+      ),
+    },
+    {
+      label: 'Lineups',
+      content: (
+        <View>
+          <Text style={{color: 'white'}}>Lineups Content</Text>
+        </View>
+      ),
+    },
+    {
+      label: 'Knockout',
+      content: (
+        <View>
+          <Text style={{color: 'white'}}>Knockout Content</Text>
+        </View>
+      ),
+    },
+  ];
+
   return (
     <GestureHandlerRootView className="">
       <View className="bg-white flex-1 p-5">
         <Menu items={menuItems} />
+        <SwipeTabs tabs={tabs} />
       </View>
     </GestureHandlerRootView>
   );
