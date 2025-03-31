@@ -89,9 +89,6 @@ const styles = StyleSheet.create({
   },
   page: {
     width,
-    height: 400,
-    justifyContent: 'center',
-    alignItems: 'center',
   },
 });
 

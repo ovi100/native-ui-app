@@ -1,14 +1,16 @@
-import React, {useState} from 'react';
-import {Pressable} from 'react-native';
+import React, { useState } from 'react';
+import { Pressable } from 'react-native';
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
   withSpring,
 } from 'react-native-reanimated';
+import { elevations } from '../lib/common';
 
 const Switch = ({
   size = 50,
-  trackColors = {on: '#4caf50', off: '#cccccc'},
+  theme = 'm',
+  trackColors = { on: '#4caf50', off: '#cccccc' },
   onToggle,
 }) => {
   const [isOn, setIsOn] = useState(false);
@@ -16,7 +18,7 @@ const Switch = ({
 
   const handleToggle = () => {
     setIsOn(prev => !prev);
-    translateX.value = withSpring(isOn ? 0 : size, {
+    translateX.value = withSpring(isOn ? 0 : theme === 'classic' ? size + (size * 0.1) : size + (size * 0.1), {
       velocity: 50,
     });
     if (onToggle) {
@@ -25,13 +27,14 @@ const Switch = ({
   };
 
   const thumbStyle = useAnimatedStyle(() => ({
-    transform: [{translateX: translateX.value}],
+    transform: [{ translateX: translateX.value }],
   }));
 
   const getContainerStyle = (ts, tc) => {
     return {
+      position: 'relative',
       width: ts * 2,
-      height: ts,
+      height: theme === 'classic' ? ts - (ts / 3) : ts,
       borderRadius: ts / 2,
       backgroundColor: isOn ? tc.on : tc.off,
       padding: 2,
@@ -41,10 +44,14 @@ const Switch = ({
 
   const getControlStyle = ts => {
     return {
-      width: ts - 5,
-      height: ts - 5,
+      position: 'absolute',
+      left: 0,
+      top: theme === 'classic' ? -(ts / (ts * 0.1)) : 2,
+      width: theme === 'classic' ? ts : ts - 5,
+      height: theme === 'classic' ? ts : ts - 5,
       borderRadius: '50%',
       backgroundColor: 'white',
+      ...elevations[3],
     };
   };
 

@@ -1,43 +1,43 @@
 import React, { useEffect } from 'react';
-import { View, StyleSheet } from 'react-native';
+import { Dimensions, View, StyleSheet } from 'react-native';
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
+  withRepeat,
+  withSequence,
   withTiming,
   Easing,
-  runOnJS,
 } from 'react-native-reanimated';
 
+import { edges } from '../lib/common';
+
+const { width } = Dimensions.get('window');
+
 const LoadingBar = ({
-  size = 'medium',
+  height = 8,
   variant = 'default',
   duration = 3000,
   edge = 'square',
 }) => {
-  const animatedProgress = useSharedValue(0);
+  const translateX = useSharedValue(-width);
+  const scaleX = useSharedValue(0);
 
   useEffect(() => {
-    const animate = () => {
-      animatedProgress.value = withTiming(
-        1,
-        {
-          duration,
-          easing: Easing.linear,
-        },
-        () => {
-          animatedProgress.value = 0;
-          runOnJS(animate)();
-        },
-      );
-    };
-    runOnJS(animate)();
-  }, [animatedProgress, duration]);
+    translateX.value = withRepeat(
+      withTiming(width, { duration, easing: Easing.linear }),
+      -1,
+      false
+    );
 
-  const sizes = {
-    small: { width: 50, height: 2, fontSize: 14 },
-    medium: { width: 100, height: 4, fontSize: 16 },
-    large: { width: 150, height: 6, fontSize: 18 },
-  };
+    scaleX.value = withRepeat(
+      withSequence(
+        withTiming(1, { duration: duration, easing: Easing.linear }),
+        withTiming(0, { duration: duration, easing: Easing.linear })
+      ),
+      -1
+    );
+  }, [duration, scaleX, translateX]);
+
 
   const variants = {
     default: { track: '#e5e7eb', fill: '#374151' },
@@ -49,35 +49,25 @@ const LoadingBar = ({
     warn: { track: '#e5e7eb', fill: '#ff8904' },
   };
 
-  const edges = {
-    square: 0,
-    rounded: 6,
-    capsule: 100,
-  };
-
   const trackStyle = {
+    height,
     backgroundColor: variants[variant].track,
-    height: sizes[size].height,
     borderRadius: edges[edge],
   };
 
-  const progressStyle = {
-    position: 'absolute',
-    width: sizes[size].width,
-    height: sizes[size].height,
+  const barStyle = {
+    height,
     backgroundColor: variants[variant].fill,
     borderRadius: edges[edge],
   };
 
   const animatedStyle = useAnimatedStyle(() => ({
-    left: `${animatedProgress.value * 100}%`,
+    transform: [{ translateX: translateX.value }, { scaleX: scaleX.value }],
   }));
 
   return (
-    <View style={styles.container}>
-      <View style={[styles.track, trackStyle]}>
-        <Animated.View style={[styles.progress, animatedStyle, progressStyle]} />
-      </View>
+    <View style={[styles.container, trackStyle]}>
+      <Animated.View style={[styles.bar, animatedStyle, barStyle]} />
     </View>
   );
 };
@@ -85,13 +75,10 @@ const LoadingBar = ({
 const styles = StyleSheet.create({
   container: {
     width: '100%',
-    paddingVertical: 10,
-    alignItems: 'center',
-  },
-  track: {
-    width: '100%',
     overflow: 'hidden',
-    position: 'relative',
+  },
+  bar: {
+    width: '100%',
   },
 });
 

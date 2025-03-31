@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, { useState } from 'react';
 import {
   Dimensions,
   Pressable,
@@ -9,14 +9,15 @@ import {
 } from 'react-native';
 import usePermissions from '../hooks/usePermissions';
 import '../global.css';
-import {Button} from 'halka-test';
-import {GestureHandlerRootView} from 'react-native-gesture-handler';
+import { Button } from 'halka-test';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import Drawer from '../components/Drawer';
 import Dropdown from '../components/Dropdown';
 import Menu from '../components/Menu';
-import Box from '../components/Box';
-import SwipeTabs from '../components/SwipeTabs';
-const {width, height} = Dimensions.get('window');
+import Tab from '../components/Tab';
+import LoadingBar from '../components/LoadingBar';
+import Switch from '../components/Switch';
+const { width, height } = Dimensions.get('window');
 
 const App = () => {
   usePermissions();
@@ -25,9 +26,9 @@ const App = () => {
   const [selectedValue, setSelectedValue] = useState(null);
   const options = ['Option 1', 'Option 2', 'Option 3', 'Option 4', 'Option 5'];
   const menuItems = [
-    {label: 'Option 1', onPress: () => console.log('Option 1 pressed')},
-    {label: 'Option 2', onPress: () => console.log('Option 2 pressed')},
-    {label: 'Option 3', onPress: () => console.log('Option 3 pressed')},
+    { content: 'Menu item 1', onPress: () => console.log('Option 1 pressed') },
+    { content: 'Menu item 2', onPress: () => console.log('Option 2 pressed') },
+    { content: 'Menu item 3', onPress: () => console.log('Option 3 pressed') },
   ];
 
   const tabs = [
@@ -35,7 +36,7 @@ const App = () => {
       label: 'Details',
       content: (
         <View>
-          <Text style={{color: 'white'}}>Details Content</Text>
+          <Text className="text-black text-lg py-5">Details Content</Text>
         </View>
       ),
     },
@@ -43,7 +44,7 @@ const App = () => {
       label: 'Odds',
       content: (
         <View>
-          <Text style={{color: 'white'}}>Odds Content</Text>
+          <Text className="text-black text-lg py-5">Odds Content</Text>
         </View>
       ),
     },
@@ -51,7 +52,7 @@ const App = () => {
       label: 'Lineups',
       content: (
         <View>
-          <Text style={{color: 'white'}}>Lineups Content</Text>
+          <Text className="text-black text-lg py-5">Lineups Content</Text>
         </View>
       ),
     },
@@ -59,7 +60,7 @@ const App = () => {
       label: 'Knockout',
       content: (
         <View>
-          <Text style={{color: 'white'}}>Knockout Content</Text>
+          <Text className="text-black text-lg py-5">Knockout Content</Text>
         </View>
       ),
     },
@@ -68,8 +69,7 @@ const App = () => {
   return (
     <GestureHandlerRootView className="">
       <View className="bg-white flex-1 p-5">
-        <Menu items={menuItems} />
-        <SwipeTabs tabs={tabs} />
+        <Switch size={20} />
       </View>
     </GestureHandlerRootView>
   );

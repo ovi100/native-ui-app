@@ -10,20 +10,18 @@ import Animated, {
   useAnimatedStyle,
   withSpring,
   runOnJS,
-  FadeInRight,
-  FadeOutRight,
 } from 'react-native-reanimated';
 import {
   GestureDetector,
   Gesture,
 } from 'react-native-gesture-handler';
-import { lighten } from '../lib/common';
+import { colors, lighten } from '../lib/common';
 
 const { width } = Dimensions.get('window');
 
 const Tab = ({
   tabs = null,
-  tabTheme = 'classic',
+  theme = 'classic',
   size = 'medium',
   variant = 'default',
 }) => {
@@ -34,15 +32,6 @@ const Tab = ({
     small: { space: 6, fontSize: 14, iconSize: 14 },
     medium: { space: 8, fontSize: 16, iconSize: 16 },
     large: { space: 10, fontSize: 18, iconSize: 18 },
-  };
-
-  const colors = {
-    default: '#374151',
-    brand: '#4f46e5',
-    primary: '#3b82f6',
-    secondary: '#a855f7',
-    danger: '#ef4444',
-    success: '#22c55e',
   };
 
   const baseStyles = {
@@ -107,7 +96,7 @@ const Tab = ({
         key,
         {
           ...baseStyles,
-          active: getActiveStyles(tabTheme),
+          active: getActiveStyles(theme),
         },
       ]),
     ),
@@ -146,16 +135,12 @@ const Tab = ({
     };
   });
 
-  if (tabs === null) {
-    return null;
-  }
-
   const tabButtonStyle = index => {
     let styles = {
       alignItems: 'center',
       width: `${100 / tabs.length}%`,
     };
-    if (tabTheme === 'classic') {
+    if (theme === 'classic') {
       styles = {
         ...styles,
         paddingBottom: 5,
@@ -184,13 +169,18 @@ const Tab = ({
     }
   };
 
+  if (tabs === null) {
+    return null;
+  }
+
+
   return (
     <View style={styles.container}>
       {/* Tab Headers */}
       <View
         style={[
           styles.header,
-          getTrackStyles(tabTheme),
+          getTrackStyles(theme),
           { padding: sizes[size].space, fontSize: sizes[size].fontSize },
         ]}>
         {tabs.map((tab, index) => (
@@ -199,10 +189,8 @@ const Tab = ({
             onPress={() => handleTabPress(index)}
             style={tabButtonStyle(index)}>
             <Animated.Text
-              entering={FadeInRight.springify().damping(80).stiffness(200)}
-              exiting={FadeOutRight.springify().damping(80).stiffness(200)}
               style={tabButtonTextStyle(index)}>
-              {tab.title}
+              {tab.label}
             </Animated.Text>
           </TouchableOpacity>
         ))}
