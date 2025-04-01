@@ -17,20 +17,11 @@ import Menu from '../components/Menu';
 import Tab from '../components/Tab';
 import LoadingBar from '../components/LoadingBar';
 import Switch from '../components/Switch';
+import DataTable from '../components/DataTable';
 const { width, height } = Dimensions.get('window');
 
 const App = () => {
   usePermissions();
-  // const [drawerVisible, setDrawerVisible] = useState(false);
-  const [menuVisible, setMenuVisible] = useState(false);
-  const [selectedValue, setSelectedValue] = useState(null);
-  const options = ['Option 1', 'Option 2', 'Option 3', 'Option 4', 'Option 5'];
-  const menuItems = [
-    { content: 'Menu item 1', onPress: () => console.log('Option 1 pressed') },
-    { content: 'Menu item 2', onPress: () => console.log('Option 2 pressed') },
-    { content: 'Menu item 3', onPress: () => console.log('Option 3 pressed') },
-  ];
-
   const tabs = [
     {
       label: 'Details',
@@ -65,13 +56,75 @@ const App = () => {
       ),
     },
   ];
+  const [squareEnabled, setSquareEnabled] = useState(false);
+  const [roundedEnabled, setRoundedEnabled] = useState(true);
+  const [toggleEnabled, setToggleEnabled] = useState(false);
+
+  const columns = ['id', 'name', 'age'];
+  const data = [
+    { id: '3', name: 'Charlie', age: '28' },
+    { id: '1', name: 'Alice', age: '25' },
+    { id: '2', name: 'Bob', age: '30' },
+    { id: '4', name: 'David', age: '35' },
+    { id: '5', name: 'Eve', age: '22' },
+    { id: '7', name: 'Grace', age: '27' },
+    { id: '6', name: 'Frank', age: '40' },
+    { id: '8', name: 'Hank', age: '32' },
+    { id: '10', name: 'Jack', age: '33' },
+    { id: '9', name: 'Ivy', age: '29' },
+    { id: '3', name: 'Charlie', age: '28' },
+    { id: '1', name: 'Alice', age: '25' },
+    { id: '2', name: 'Bob', age: '30' },
+    { id: '4', name: 'David', age: '35' },
+    { id: '5', name: 'Eve', age: '22' },
+    { id: '7', name: 'Grace', age: '27' },
+    { id: '6', name: 'Frank', age: '40' },
+    { id: '8', name: 'Hank', age: '32' },
+    { id: '10', name: 'Jack', age: '33' },
+    { id: '9', name: 'Ivy', age: '29' },
+    { id: '3', name: 'Charlie', age: '28' },
+    { id: '1', name: 'Alice', age: '25' },
+    { id: '2', name: 'Bob', age: '30' },
+    { id: '4', name: 'David', age: '35' },
+    { id: '5', name: 'Eve', age: '22' },
+    { id: '7', name: 'Grace', age: '27' },
+    { id: '6', name: 'Frank', age: '40' },
+    { id: '8', name: 'Hank', age: '32' },
+    { id: '10', name: 'Jack', age: '33' },
+    { id: '9', name: 'Ivy', age: '29' },
+  ];
+
 
   return (
     <GestureHandlerRootView className="">
       <View className="bg-white flex-1 p-5">
-        <Switch size={20} />
+        {/* <View className="switches flex-row items-center justify-around">
+          <Switch
+            value={squareEnabled}
+            onChange={setSquareEnabled}
+            type="square"
+            size={30}
+          />
+
+          <Switch
+            value={roundedEnabled}
+            onChange={setRoundedEnabled}
+            type="rounded"
+            size={30}
+          />
+
+          <Switch
+            value={toggleEnabled}
+            onChange={setToggleEnabled}
+            type="toggle"
+            size={30}
+          />
+        </View> */}
+        <View className="data-table flex-1 mt-5">
+          <DataTable columns={columns} initialData={data} />
+        </View>
       </View>
-    </GestureHandlerRootView>
+    </GestureHandlerRootView >
   );
 };
 
