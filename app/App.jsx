@@ -1,114 +1,135 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Dimensions,
   FlatList,
-  Pressable,
-  SafeAreaView,
   StyleSheet,
   Text,
+  TouchableOpacity,
   View,
 } from 'react-native';
 import usePermissions from '../hooks/usePermissions';
 import '../global.css';
 import { Button } from 'halka-test';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import Drawer from '../components/Drawer';
-import Dropdown from '../components/Dropdown';
-import Menu from '../components/Menu';
-import Tab from '../components/Tab';
-import LoadingBar from '../components/LoadingBar';
-import Switch from '../components/Switch';
 import DataTable from '../components/DataTable';
-import SwipeableRow from '../components/SwipeableRow';
+
 const { width, height } = Dimensions.get('window');
 
 const App = () => {
   usePermissions();
-  const tabs = [
+
+  // const columns = ['id', 'name', 'age'];
+  // const data = [
+  //   { id: '3', name: 'Charlie', age: '28' },
+  //   { id: '1', name: 'Alice', age: '25' },
+  //   { id: '2', name: 'Bob', age: '30' },
+  //   { id: '4', name: 'David', age: '35' },
+  //   { id: '5', name: 'Eve', age: '22' },
+  //   { id: '7', name: 'Grace', age: '27' },
+  //   { id: '6', name: 'Frank', age: '40' },
+  //   { id: '8', name: 'Hank', age: '32' },
+  //   { id: '10', name: 'Jack', age: '33' },
+  //   { id: '9', name: 'Ivy', age: '29' },
+  //   { id: '3', name: 'Charlie', age: '28' },
+  //   { id: '1', name: 'Alice', age: '25' },
+  //   { id: '2', name: 'Bob', age: '30' },
+  //   { id: '4', name: 'David', age: '35' },
+  //   { id: '5', name: 'Eve', age: '22' },
+  //   { id: '7', name: 'Grace', age: '27' },
+  //   { id: '6', name: 'Frank', age: '40' },
+  //   { id: '8', name: 'Hank', age: '32' },
+  //   { id: '10', name: 'Jack', age: '33' },
+  //   { id: '9', name: 'Ivy', age: '29' },
+  //   { id: '3', name: 'Charlie', age: '28' },
+  //   { id: '1', name: 'Alice', age: '25' },
+  //   { id: '2', name: 'Bob', age: '30' },
+  //   { id: '4', name: 'David', age: '35' },
+  //   { id: '5', name: 'Eve', age: '22' },
+  //   { id: '7', name: 'Grace', age: '27' },
+  //   { id: '6', name: 'Frank', age: '40' },
+  //   { id: '8', name: 'Hank', age: '32' },
+  //   { id: '10', name: 'Jack', age: '33' },
+  //   { id: '9', name: 'Ivy', age: '29' },
+  // ];
+
+  // const [users, setUsers] = useState([]);
+  // const [isLoading, setIsLoading] = useState(false);
+  // const [currentPage, setCurrentPage] = useState(1);
+  // const [totalItems, setTotalItems] = useState(0);
+  // const itemsPerPage = 8;
+
+  // const fetchUsers = async (page = 1) => {
+  //   setIsLoading(true);
+  //   try {
+  //     const skip = (page - 1) * itemsPerPage;
+  //     const response = await fetch(`https://dummyjson.com/users?limit=${itemsPerPage}&skip=${skip}`);
+  //     const data = await response.json();
+  //     setUsers(data.users);
+  //     setTotalItems(data.total);
+  //     setCurrentPage(page);
+  //   } catch (error) {
+  //     console.error('Error fetching users:', error);
+  //   } finally {
+  //     setIsLoading(false);
+  //   }
+  // };
+
+  // useEffect(() => {
+  //   fetchUsers();
+  // }, []);
+
+  // const columns = [
+  //   { header: 'ID', accessor: 'id', flex: 0.5 },
+  //   { header: 'Email', accessor: 'email', flex: 1.5 },
+  //   { header: 'Age', accessor: 'age', flex: 0.5 },
+  // ];
+
+  // const columns = [
+  //   { header: 'ID', accessor: 'id', flex: 0.5 },
+  //   {
+  //     header: 'Name',
+  //     flex: 1.5,
+  //     render: (item) => `${item.firstName} ${item.lastName}`,
+  //     cellStyle: { color: 'blue' },
+  //   },
+  //   { header: 'Age', accessor: 'age', flex: 0.5 },
+  // ];
+
+  const [products, setProducts] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
+
+  const fetchProducts = async () => {
+    setIsLoading(true);
+    try {
+      const response = await fetch('https://dummyjson.com/product?limit=200');
+      const data = await response.json();
+      setProducts(data.products);
+    } catch (error) {
+      console.error('Error fetching products:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchProducts();
+  }, []);
+
+  const columns = [
+    { header: 'ID', accessor: 'id', flex: 0.5 },
+    { header: 'Title', accessor: 'title', flex: 2 },
+    { header: 'Price', accessor: 'price', flex: 1 },
+    { header: 'Brand', accessor: 'brand', flex: 1 },
     {
-      label: 'Details',
-      content: (
-        <View>
-          <Text className="text-black text-lg py-5">Details Content</Text>
-        </View>
-      ),
-    },
-    {
-      label: 'Odds',
-      content: (
-        <View>
-          <Text className="text-black text-lg py-5">Odds Content</Text>
-        </View>
-      ),
-    },
-    {
-      label: 'Lineups',
-      content: (
-        <View>
-          <Text className="text-black text-lg py-5">Lineups Content</Text>
-        </View>
-      ),
-    },
-    {
-      label: 'Knockout',
-      content: (
-        <View>
-          <Text className="text-black text-lg py-5">Knockout Content</Text>
-        </View>
+      header: 'In Stock',
+      flex: 1,
+      render: (item) => (
+        <Text style={{ color: item.stock > 50 ? 'green' : 'orange' }}>
+          {item.stock}
+        </Text>
       ),
     },
   ];
-  const [squareEnabled, setSquareEnabled] = useState(false);
-  const [roundedEnabled, setRoundedEnabled] = useState(true);
-  const [toggleEnabled, setToggleEnabled] = useState(false);
-
-  const columns = ['id', 'name', 'age'];
-  const data = [
-    { id: '3', name: 'Charlie', age: '28' },
-    { id: '1', name: 'Alice', age: '25' },
-    { id: '2', name: 'Bob', age: '30' },
-    { id: '4', name: 'David', age: '35' },
-    { id: '5', name: 'Eve', age: '22' },
-    { id: '7', name: 'Grace', age: '27' },
-    { id: '6', name: 'Frank', age: '40' },
-    { id: '8', name: 'Hank', age: '32' },
-    { id: '10', name: 'Jack', age: '33' },
-    { id: '9', name: 'Ivy', age: '29' },
-    { id: '3', name: 'Charlie', age: '28' },
-    { id: '1', name: 'Alice', age: '25' },
-    { id: '2', name: 'Bob', age: '30' },
-    { id: '4', name: 'David', age: '35' },
-    { id: '5', name: 'Eve', age: '22' },
-    { id: '7', name: 'Grace', age: '27' },
-    { id: '6', name: 'Frank', age: '40' },
-    { id: '8', name: 'Hank', age: '32' },
-    { id: '10', name: 'Jack', age: '33' },
-    { id: '9', name: 'Ivy', age: '29' },
-    { id: '3', name: 'Charlie', age: '28' },
-    { id: '1', name: 'Alice', age: '25' },
-    { id: '2', name: 'Bob', age: '30' },
-    { id: '4', name: 'David', age: '35' },
-    { id: '5', name: 'Eve', age: '22' },
-    { id: '7', name: 'Grace', age: '27' },
-    { id: '6', name: 'Frank', age: '40' },
-    { id: '8', name: 'Hank', age: '32' },
-    { id: '10', name: 'Jack', age: '33' },
-    { id: '9', name: 'Ivy', age: '29' },
-  ];
-
-  const renderItem = ({ item }) => (
-    <View className="flex-row items-center border-b border-gray-200 p-2.5">
-      <Text className="w-1/3 text-base text-center text-black" numberOfLines={1}>
-        {item.id}
-      </Text>
-      <Text className="w-1/3 text-black text-center text-base">
-        {item.name}
-      </Text>
-      <Text className="w-1/3 text-black text-center text-base">
-        {item.age}
-      </Text>
-    </View>
-  );
 
 
   return (
@@ -137,25 +158,34 @@ const App = () => {
           />
         </View> */}
         <View className="data-table flex-1 mt-5">
-          {/* <DataTable columns={columns} initialData={data} /> */}
-          <View className="flex-row items-center bg-gray-300 p-2 mb-2">
-            {columns.map((col, index) => (
-              <Text className="w-1/3 text-center text-base font-semibold capitalize" key={index}>{col}</Text>
-            ))}
-          </View>
-
-          {/* Table Rows */}
-          <FlatList
-            data={data}
-            keyExtractor={(_, i) => i.toString()}
-            renderItem={({ item }) => <SwipeableRow item={item} columns={columns} />}
-            initialNumToRender={10}
-          // onEndReached={handleEndReached}
-          // ListFooterComponent={data.length > 10 ? renderFooter : null}
-          // ListFooterComponentStyle={styles.ListFooterStyle}
-          // style={{ flex: 1 }}
-          // contentContainerStyle={{ paddingBottom: 50 }}
-          />
+          {/* <Text className="text-center text-lg font-semibold p-3">Paginated User Table</Text>
+          <DataTable
+            columns={columns}
+            data={users}
+            isLoading={isLoading}
+            pagination={true}
+            totalItems={totalItems}
+            itemsPerPage={itemsPerPage}
+            currentPage={currentPage}
+            onPageChange={fetchUsers}
+            headerStyle={{ backgroundColor: '#4CAF50' }}
+            rowStyle={{ backgroundColor: '#f9f9f9' }}
+          /> */}
+        <Text className="text-center text-lg font-semibold p-3">Non-Paginated Product Table</Text>
+        <DataTable
+          columns={columns}
+          data={products}
+          isLoading={isLoading}
+          pagination={false}
+          emptyComponent={
+            <View style={styles.customEmpty}>
+              <Text>No products found</Text>
+              <TouchableOpacity onPress={fetchProducts}>
+                <Text style={styles.retryText}>Retry</Text>
+              </TouchableOpacity>
+            </View>
+          }
+        />
         </View>
       </View>
     </GestureHandlerRootView >
