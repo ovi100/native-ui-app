@@ -33,7 +33,7 @@ const DataTable = ({
           : String(b[column]).localeCompare(String(a[column]));
       }
     });
-    setData(sorted); // Ensure a new array is assigned
+    setData(sorted);
   };
 
   return (
@@ -66,8 +66,6 @@ const DataTable = ({
             refreshing={refreshing}
           />
         ) : null}
-        // style={{ flex: 1 }}
-        // contentContainerStyle={{ paddingBottom: 50 }}
       />
     </View>
   );
@@ -75,7 +73,7 @@ const DataTable = ({
 
 const styles = StyleSheet.create({
   container: {
-    // flex: 1,
+    flex: 1,
     backgroundColor: '#fff',
   },
   header: {

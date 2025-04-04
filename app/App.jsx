@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import {
   Dimensions,
+  FlatList,
   Pressable,
   SafeAreaView,
   StyleSheet,
@@ -18,6 +19,7 @@ import Tab from '../components/Tab';
 import LoadingBar from '../components/LoadingBar';
 import Switch from '../components/Switch';
 import DataTable from '../components/DataTable';
+import SwipeableRow from '../components/SwipeableRow';
 const { width, height } = Dimensions.get('window');
 
 const App = () => {
@@ -94,9 +96,23 @@ const App = () => {
     { id: '9', name: 'Ivy', age: '29' },
   ];
 
+  const renderItem = ({ item }) => (
+    <View className="flex-row items-center border-b border-gray-200 p-2.5">
+      <Text className="w-1/3 text-base text-center text-black" numberOfLines={1}>
+        {item.id}
+      </Text>
+      <Text className="w-1/3 text-black text-center text-base">
+        {item.name}
+      </Text>
+      <Text className="w-1/3 text-black text-center text-base">
+        {item.age}
+      </Text>
+    </View>
+  );
+
 
   return (
-    <GestureHandlerRootView className="">
+    <GestureHandlerRootView className="flex-1 bg-white">
       <View className="bg-white flex-1 p-5">
         {/* <View className="switches flex-row items-center justify-around">
           <Switch
@@ -121,7 +137,25 @@ const App = () => {
           />
         </View> */}
         <View className="data-table flex-1 mt-5">
-          <DataTable columns={columns} initialData={data} />
+          {/* <DataTable columns={columns} initialData={data} /> */}
+          <View className="flex-row items-center bg-gray-300 p-2 mb-2">
+            {columns.map((col, index) => (
+              <Text className="w-1/3 text-center text-base font-semibold capitalize" key={index}>{col}</Text>
+            ))}
+          </View>
+
+          {/* Table Rows */}
+          <FlatList
+            data={data}
+            keyExtractor={(_, i) => i.toString()}
+            renderItem={({ item }) => <SwipeableRow item={item} columns={columns} />}
+            initialNumToRender={10}
+          // onEndReached={handleEndReached}
+          // ListFooterComponent={data.length > 10 ? renderFooter : null}
+          // ListFooterComponentStyle={styles.ListFooterStyle}
+          // style={{ flex: 1 }}
+          // contentContainerStyle={{ paddingBottom: 50 }}
+          />
         </View>
       </View>
     </GestureHandlerRootView >
