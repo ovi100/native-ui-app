@@ -12,6 +12,7 @@ import '../global.css';
 import { Button } from 'halka-test';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import DataTable from '../components/DataTable';
+import Dialog from '../components/Dialog';
 
 const { width, height } = Dimensions.get('window');
 
@@ -131,6 +132,8 @@ const App = () => {
     },
   ];
 
+  const [visible, setVisible] = useState(true);
+
 
   return (
     <GestureHandlerRootView className="flex-1 bg-white">
@@ -171,7 +174,7 @@ const App = () => {
             headerStyle={{ backgroundColor: '#4CAF50' }}
             rowStyle={{ backgroundColor: '#f9f9f9' }}
           /> */}
-        <Text className="text-center text-lg font-semibold p-3">Non-Paginated Product Table</Text>
+          {/* <Text className="text-center text-lg font-semibold p-3">Non-Paginated Product Table</Text>
         <DataTable
           columns={columns}
           data={products}
@@ -185,8 +188,14 @@ const App = () => {
               </TouchableOpacity>
             </View>
           }
-        />
+        /> */}
         </View>
+        <Button
+          text="Open Dialog"
+          size="large"
+          variant="action"
+          onPress={() => setVisible(true)}  />
+        <Dialog isOpen={visible} onClose={() => setVisible(false)} />
       </View>
     </GestureHandlerRootView >
   );

@@ -1,24 +1,19 @@
 import React from 'react';
-import { Modal, StyleSheet, Text, View } from 'react-native';
+import {Modal, StyleSheet, Text, View} from 'react-native';
 import Button from './Button';
 
-const demoContent = { color: 'black', padding: 16, textAlign: 'center' };
+const demoContent = {color: 'black', padding: 16, textAlign: 'center'};
 
 const Dialog = ({
   isOpen = false,
   header = 'Dialog Header',
   subHeader = '',
-  onClose = null,
-  onSubmit = null,
+  onClose = () => null,
+  onSubmit = () => null,
   leftButtonText = 'Cancel',
   rightButtonText = 'Submit',
-  children = (
-    <Text style={demoContent}>
-      This is dialog children and it can be anything Ex: Text, View.......
-    </Text>
-  ),
+  children = null,
 }) => {
-
   return (
     <Modal
       visible={isOpen}
@@ -31,9 +26,7 @@ const Dialog = ({
             <Text style={styles.headerText}>{header}</Text>
           </View>
           <View style={styles.dialogBody}>
-            {subHeader && (
-              <Text style={styles.subHeaderText}>{subHeader}</Text>
-            )}
+            {subHeader && <Text style={styles.subHeaderText}>{subHeader}</Text>}
             {children && children}
           </View>
           <View style={styles.dialogFooter}>
@@ -42,7 +35,11 @@ const Dialog = ({
                 <Button
                   text={leftButtonText}
                   size="small"
-                  variant={leftButtonText.toLowerCase() === 'cancel' ? 'cancel' : 'default'}
+                  variant={
+                    leftButtonText.toLowerCase() === 'cancel'
+                      ? 'cancel'
+                      : 'default'
+                  }
                   onPress={onClose}
                 />
               </View>
@@ -63,7 +60,6 @@ const Dialog = ({
 };
 
 export default Dialog;
-
 
 const styles = StyleSheet.create({
   container: {
