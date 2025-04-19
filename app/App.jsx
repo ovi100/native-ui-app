@@ -12,14 +12,12 @@ import '../global.css';
 import { Button } from 'halka-test';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import DataTable from '../components/DataTable';
-import Dialog from '../components/Dialog';
 
 const { width, height } = Dimensions.get('window');
 
 const App = () => {
   usePermissions();
 
-  // const columns = ['id', 'name', 'age'];
   // const data = [
   //   { id: '3', name: 'Charlie', age: '28' },
   //   { id: '1', name: 'Alice', age: '25' },
@@ -53,86 +51,83 @@ const App = () => {
   //   { id: '9', name: 'Ivy', age: '29' },
   // ];
 
-  // const [users, setUsers] = useState([]);
-  // const [isLoading, setIsLoading] = useState(false);
-  // const [currentPage, setCurrentPage] = useState(1);
-  // const [totalItems, setTotalItems] = useState(0);
-  // const itemsPerPage = 8;
-
-  // const fetchUsers = async (page = 1) => {
-  //   setIsLoading(true);
-  //   try {
-  //     const skip = (page - 1) * itemsPerPage;
-  //     const response = await fetch(`https://dummyjson.com/users?limit=${itemsPerPage}&skip=${skip}`);
-  //     const data = await response.json();
-  //     setUsers(data.users);
-  //     setTotalItems(data.total);
-  //     setCurrentPage(page);
-  //   } catch (error) {
-  //     console.error('Error fetching users:', error);
-  //   } finally {
-  //     setIsLoading(false);
-  //   }
-  // };
-
-  // useEffect(() => {
-  //   fetchUsers();
-  // }, []);
-
-  // const columns = [
-  //   { header: 'ID', accessor: 'id', flex: 0.5 },
-  //   { header: 'Email', accessor: 'email', flex: 1.5 },
-  //   { header: 'Age', accessor: 'age', flex: 0.5 },
-  // ];
-
-  // const columns = [
-  //   { header: 'ID', accessor: 'id', flex: 0.5 },
-  //   {
-  //     header: 'Name',
-  //     flex: 1.5,
-  //     render: (item) => `${item.firstName} ${item.lastName}`,
-  //     cellStyle: { color: 'blue' },
-  //   },
-  //   { header: 'Age', accessor: 'age', flex: 0.5 },
-  // ];
-
-  const [products, setProducts] = useState([]);
+  const [users, setUsers] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalItems, setTotalItems] = useState(0);
+  const itemsPerPage = 8;
 
-  const fetchProducts = async () => {
+  const fetchUsers = async (page = 1) => {
     setIsLoading(true);
     try {
-      const response = await fetch('https://dummyjson.com/product?limit=200');
+      const skip = (page - 1) * itemsPerPage;
+      const response = await fetch(`https://dummyjson.com/users?limit=${itemsPerPage}&skip=${skip}`);
       const data = await response.json();
-      setProducts(data.products);
+      setUsers(data.users);
+      setTotalItems(data.total);
+      setCurrentPage(page);
     } catch (error) {
-      console.error('Error fetching products:', error);
+      console.error('Error fetching users:', error);
     } finally {
       setIsLoading(false);
     }
   };
 
   useEffect(() => {
-    fetchProducts();
+    fetchUsers();
   }, []);
 
+  // const columns = [
+  //   { title: 'ID', key: 'id', flex: 0.5 },
+  //   {
+  //     title: 'Name',
+  //     flex: 1.5,
+  //     render: (item) => `${item.firstName} ${item.lastName}`,
+  //   },
+  //   { title: 'Age', key: 'age', flex: 0.5 },
+  // ];
+
   const columns = [
-    { header: 'ID', accessor: 'id', flex: 0.5 },
-    { header: 'Title', accessor: 'title', flex: 2 },
-    { header: 'Price', accessor: 'price', flex: 1 },
-    { header: 'Brand', accessor: 'brand', flex: 1 },
-    {
-      header: 'In Stock',
-      flex: 1,
-      render: (item) => (
-        <Text style={{ color: item.stock > 50 ? 'green' : 'orange' }}>
-          {item.stock}
-        </Text>
-      ),
-    },
+    { title: 'ID', key: 'id', flex: 0.5 },
+    { title: 'Email', key: 'email', flex: 1.5 },
+    { title: 'Age', key: 'age', flex: 0.5 },
   ];
 
-  const [visible, setVisible] = useState(true);
+  // const [products, setProducts] = useState([]);
+  // const [isLoading, setIsLoading] = useState(false);
+
+  // const fetchProducts = async () => {
+  //   setIsLoading(true);
+  //   try {
+  //     const response = await fetch('https://dummyjson.com/product?limit=200');
+  //     const data = await response.json();
+  //     setProducts(data.products);
+  //   } catch (error) {
+  //     console.error('Error fetching products:', error);
+  //   } finally {
+  //     setIsLoading(false);
+  //   }
+  // };
+
+  // useEffect(() => {
+  //   fetchProducts();
+  // }, []);
+
+  // const columns = [
+  //   { title: 'ID', key: 'id', flex: 1 },
+  //   { title: 'Title', key: 'title', flex: 2 },
+  //   { title: 'Price', key: 'price', flex: 1 },
+  //   { title: 'Brand', key: 'brand', flex: 1 },
+  //   {
+  //     title: 'In Stock',
+  //     flex: 1,
+  //     render: (item) => (
+  //       <Text style={{ color: item.stock > 50 ? 'green' : 'orange' }}>
+  //         {item.stock}
+  //       </Text>
+  //     ),
+  //   },
+  // ];
 
 
   return (
@@ -161,7 +156,7 @@ const App = () => {
           />
         </View> */}
         <View className="data-table flex-1 mt-5">
-          {/* <Text className="text-center text-lg font-semibold p-3">Paginated User Table</Text>
+          <Text className="text-center text-lg font-semibold p-3">Paginated User Table</Text>
           <DataTable
             columns={columns}
             data={users}
@@ -171,31 +166,26 @@ const App = () => {
             itemsPerPage={itemsPerPage}
             currentPage={currentPage}
             onPageChange={fetchUsers}
-            headerStyle={{ backgroundColor: '#4CAF50' }}
-            rowStyle={{ backgroundColor: '#f9f9f9' }}
-          /> */}
+            color="#14b8a6"
+          // headerStyle={{ backgroundColor: '#4CAF50' }}
+          // rowStyle={{ backgroundColor: '#f9f9f9' }}
+          />
           {/* <Text className="text-center text-lg font-semibold p-3">Non-Paginated Product Table</Text>
-        <DataTable
-          columns={columns}
-          data={products}
-          isLoading={isLoading}
-          pagination={false}
-          emptyComponent={
-            <View style={styles.customEmpty}>
-              <Text>No products found</Text>
-              <TouchableOpacity onPress={fetchProducts}>
-                <Text style={styles.retryText}>Retry</Text>
-              </TouchableOpacity>
-            </View>
-          }
-        /> */}
+          <DataTable
+            columns={columns}
+            data={products}
+            isLoading={isLoading}
+            pagination={false}
+            emptyComponent={
+              <View style={styles.customEmpty}>
+                <Text>No products found</Text>
+                <TouchableOpacity onPress={fetchProducts}>
+                  <Text style={styles.retryText}>Retry</Text>
+                </TouchableOpacity>
+              </View>
+            }
+          /> */}
         </View>
-        <Button
-          text="Open Dialog"
-          size="large"
-          variant="action"
-          onPress={() => setVisible(true)}  />
-        <Dialog isOpen={visible} onClose={() => setVisible(false)} />
       </View>
     </GestureHandlerRootView >
   );

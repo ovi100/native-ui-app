@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import {
+  Dimensions,
   View,
   Text,
   TextInput,
@@ -14,57 +15,87 @@ import Animated, {
 } from 'react-native-reanimated';
 import { elevations } from '../lib/common';
 
+const { height } = Dimensions.get('window');
+
+const HEIGHT = height;
+
 const Dropdown = ({
   options,
-  onSelect,
+  onChange,
   placeholder = 'Select an option',
-  searchable = true,
+  searchable = false,
+  position = 'bottom',
   elevation = 3,
+  dropdownStyle = {},
 }) => {
   const [selected, setSelected] = useState(null);
   const [open, setOpen] = useState(false);
   const [searchText, setSearchText] = useState('');
-  const height = useSharedValue(0);
+  const sharedHeight = useSharedValue(0);
   const rotateValue = useSharedValue(45);
+
+  const normalizedOptions = useMemo(() => {
+    return options.map(item =>
+      typeof item === 'string' ? { label: item, value: item } : item,
+    );
+  }, [options]);
 
   const toggleDropdown = () => {
     setOpen(!open);
-    height.value = withTiming(
-      open ? 0 : searchable ? options.length * 45 + 50 : options.length * 45,
+    sharedHeight.value = withTiming(
+      open
+        ? 0
+        : searchable
+          ? normalizedOptions.length * 45 + 50
+          : options.length * 45,
       { duration: 300 },
     );
     rotateValue.value = withTiming(open ? 45 : 225, { duration: 300 });
   };
 
   const handleSelect = option => {
-    setSelected(option);
+    setSelected(option.value);
     setSearchText('');
     setOpen(false);
-    height.value = withTiming(0, { duration: 300 });
+    sharedHeight.value = withTiming(0, { duration: 300 });
     rotateValue.value = withTiming(45, { duration: 300 });
-    onSelect(option);
+    onChange(option);
   };
 
   const animatedStyle = useAnimatedStyle(() => ({
-    height: height.value,
+    height: sharedHeight.value,
   }));
 
   const rotateStyle = useAnimatedStyle(() => ({
     transform: [{ rotate: `${rotateValue.value}deg` }],
   }));
 
-  const filteredOptions = options.filter(item =>
-    item.toLowerCase().includes(searchText.toLowerCase()),
+  const filteredOptions = normalizedOptions.filter(
+    item =>
+      item.label.toLowerCase().includes(searchText.toLowerCase()) ||
+      item.value.toLowerCase().includes(searchText.toLowerCase()),
   );
+
+  // console.log(dropdownStyle);
 
   return (
     <View style={styles.container}>
-      <TouchableOpacity style={styles.button} onPress={toggleDropdown}>
-        <Text style={styles.text}>{selected || placeholder}</Text>
-        <Animated.View style={[styles.icon, rotateStyle]} />
+      <TouchableOpacity
+        style={[dropdownStyle?.button ? dropdownStyle?.button : styles.button]}
+        onPress={(e) => toggleDropdown()}
+      >
+        <Text style={dropdownStyle?.text ? dropdownStyle?.text : styles.text}>{selected || placeholder}</Text>
+        <Animated.View style={[dropdownStyle?.icon ? dropdownStyle?.icon : styles.icon, rotateStyle]} />
       </TouchableOpacity>
 
-      <Animated.View style={[styles.dropdown, elevations[elevation], animatedStyle]}>
+      <Animated.View
+        style={[
+          styles.dropdown,
+          position === 'top' ? styles.dropdownTop : styles.dropdownBottom,
+          // { top: buttonLayout.height - 5 },
+          elevations[elevation],
+          animatedStyle,
+        ]}>
         {open && searchable && (
           <TextInput
             style={styles.searchInput}
@@ -77,16 +108,17 @@ const Dropdown = ({
         )}
         {open && (
           <FlatList
-            data={searchable ? filteredOptions : options}
-            keyExtractor={item => item}
+            data={searchable ? filteredOptions : normalizedOptions}
+            keyExtractor={item => item.value.toString()}
             renderItem={({ item }) => (
               <TouchableOpacity
                 onPress={() => handleSelect(item)}
-                style={styles.option}>
-                <Text style={styles.text}>{item}</Text>
-                {selected === item && <View style={styles.sign} />}
+                style={[styles.flexRow, styles.option]}>
+                <Text style={styles.text}>{item.label}</Text>
+                {selected === item.value && <View style={styles.sign} />}
               </TouchableOpacity>
             )}
+            initialNumToRender={10}
             ListEmptyComponent={
               searchable && (
                 <Text style={styles.noResults}>No options found</Text>
@@ -101,31 +133,49 @@ const Dropdown = ({
 
 const styles = StyleSheet.create({
   container: {
-    width: '100%',
+    position: 'relative',
+    width: 'auto',
+  },
+  flexRow: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   button: {
-    backgroundColor: '#f0f0f0',
-    padding: 12,
-    borderRadius: 8,
-    // borderTopLeftRadius: 8,
-    // borderTopRightRadius: 8,
-    borderWidth: 1,
-    borderColor: '#ccc',
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
+    gap: 5,
+    backgroundColor: '#fff',
+    padding: 12,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: '#ccc',
+    // borderTopLeftRadius: 8,
+    // borderTopRightRadius: 8,
   },
   text: {
-    fontSize: 16,
+    fontSize: 14,
     color: '#333',
   },
   dropdown: {
+    position: 'absolute',
+    width: '100%',
+    maxHeight: HEIGHT * 0.5,
+    backgroundColor: 'white',
     marginTop: 8,
-    overflow: 'hidden',
     borderRadius: 8,
     // borderBottomLeftRadius: 8,
     // borderBottomRightRadius: 8,
-    backgroundColor: 'white',
+    zIndex: 100,
+  },
+  dropdownTop: {
+    bottom: '100%',
+    marginBottom: 1,
+  },
+  dropdownBottom: {
+    top: '100%',
+    marginTop: 1,
   },
   icon: {
     width: 10,
@@ -140,12 +190,9 @@ const styles = StyleSheet.create({
     borderBottomColor: '#ddd',
   },
   option: {
-    padding: 12,
+    padding: 10,
     borderBottomWidth: 1,
     borderBottomColor: '#eee',
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
   },
   sign: {
     width: 8,

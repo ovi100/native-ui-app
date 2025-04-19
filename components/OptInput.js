@@ -1,31 +1,20 @@
-import React, {useEffect, useRef, useState} from 'react';
-import {TextInput, View, StyleSheet} from 'react-native';
+import React, { useEffect, useRef, useState } from 'react';
+import { TextInput, View, StyleSheet } from 'react-native';
 
-const OtpInput = ({length = 4, type = 'box', focusColor = '', onOtpChange}) => {
-  length = Math.round(length);
+const OtpInput = ({ type = 'box', length = 4, onChange, focusColor = '' }) => {
   const [otp, setOtp] = useState([]);
   const [focusedInput, setFocusedInput] = useState(null);
   const inputRefs = useRef([]);
 
   useEffect(() => {
-    setOtp(Array(length).fill(''));
+    setOtp(Array(Math.round(length)).fill(''));
   }, [length]);
 
   const handleChange = (text, index) => {
-    // if (text.length > 1) {
-    //   const pastedOtp = text.split('').slice(0, length);
-    //   setOtp(pastedOtp);
-    //   onOtpChange(pastedOtp.join(''));
-    //   pastedOtp.forEach((digit, i) => {
-    //     if (inputRefs.current[i]) { inputRefs.current[i].setNativeProps({ text: digit }); }
-    //   });
-    //   return;
-    // }
-
     const newOtp = [...otp];
     newOtp[index] = text;
     setOtp(newOtp);
-    onOtpChange(newOtp.join(''));
+    onChange(newOtp.join(''));
 
     if (text && index < length - 1) {
       inputRefs.current[index + 1]?.focus();
@@ -37,23 +26,6 @@ const OtpInput = ({length = 4, type = 'box', focusColor = '', onOtpChange}) => {
       inputRefs.current[index - 1]?.focus();
     }
   };
-
-  // Handle paste from clipboard
-  // const handlePaste = async () => {
-  //   const clipboardText = await Clipboard.getString();
-  //   if (clipboardText.length === length) {
-  //     const newCodes = clipboardText.split('');
-  //     setOtp(newCodes);
-
-  //     // Focus the last input
-  //     inputRefs.current[length - 1].focus();
-
-  //     // Trigger onComplete
-  //     if (onOtpChange) {
-  //       onOtpChange(newCodes.join(''));
-  //     }
-  //   }
-  // };
 
   const getInputStyles = inputType => {
     let size = 100 / length;

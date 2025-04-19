@@ -2,7 +2,7 @@ import React from 'react';
 import {Modal, StyleSheet, Text, View} from 'react-native';
 import Button from './Button';
 
-const demoContent = {color: 'black', padding: 16, textAlign: 'center'};
+// const demoContent = {color: 'black', padding: 16, textAlign: 'center'};
 
 const Dialog = ({
   isOpen = false,
