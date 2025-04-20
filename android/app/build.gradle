@@ -79,6 +79,11 @@ android {
     compileSdk rootProject.ext.compileSdkVersion
 
     namespace "com.halkauinative"
+
+    lint {
+        baseline = file("lint-baseline.xml")
+    }
+
     defaultConfig {
         applicationId "com.halkauinative"
         minSdkVersion rootProject.ext.minSdkVersion
@@ -117,5 +122,11 @@ dependencies {
         implementation("com.facebook.react:hermes-android")
     } else {
         implementation jscFlavor
+    }
+}
+
+afterEvaluate {
+    tasks.named("generateDebugLintReportModel").configure {
+        dependsOn tasks.named("copyReactNativeVectorIconFonts")
     }
 }

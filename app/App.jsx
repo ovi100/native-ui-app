@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import {
+  ActivityIndicator,
   Dimensions,
+  Modal,
   StyleSheet,
   Text,
   TouchableOpacity,
@@ -11,6 +13,8 @@ import '../global.css';
 import { Button } from 'halka-test';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import DataTable from '../components/DataTable';
+import { HotUpdater } from '@hot-updater/react-native';
+import ProgressBar from '../components/ProgressBar';
 
 const { width, height } = Dimensions.get('window');
 
@@ -142,7 +146,37 @@ const App = () => {
   );
 };
 
-export default App;
+export default HotUpdater.wrap({
+  source: 'https://veztrsdcupuupewujfgr.supabase.co/functions/v1/update-server',
+  requestHeaders: {
+    // if you want to use the request headers, you can add them here
+  },
+  fallbackComponent: ({ progress, status, message }) => {
+    const showModal = status === 'UPDATING' || status === 'CHECKING';
+
+    return (
+      <Modal
+        visible={showModal}
+        transparent
+        animationType="fade"
+      >
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalContent}>
+            <ActivityIndicator size="large" color="#ffffff" />
+            <Text style={styles.title}>
+              {status === 'UPDATING' ? 'Updating App...' : 'Checking for Updates...'}
+            </Text>
+            {message ? <Text style={styles.message}>{message}</Text> : null}
+            {progress > 0 ? (
+              <ProgressBar progress={Math.round(progress * 100)} size="small" variant="success" />
+            ) : null}
+          </View>
+        </View>
+      </Modal>
+    );
+  },
+})(App);
+
 
 const styles = StyleSheet.create({
   container: {
@@ -194,5 +228,35 @@ const styles = StyleSheet.create({
     color: '#000000',
     marginVertical: 20,
     fontSize: 16,
+  },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.5)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  modalContent: {
+    backgroundColor: '#333',
+    padding: 24,
+    borderRadius: 12,
+    alignItems: 'center',
+    minWidth: '70%',
+  },
+  title: {
+    color: 'white',
+    fontSize: 20,
+    fontWeight: 'bold',
+    marginTop: 16,
+  },
+  message: {
+    color: '#ccc',
+    fontSize: 16,
+    marginTop: 8,
+  },
+  progress: {
+    color: '#fff',
+    fontSize: 18,
+    fontWeight: '600',
+    marginTop: 10,
   },
 });
