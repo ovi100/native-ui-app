@@ -1,5 +1,14 @@
-import React, { useState, useMemo, useCallback } from 'react';
-import { View, Text, StyleSheet, FlatList, TouchableOpacity, ActivityIndicator, TextInput } from 'react-native';
+import React, {useState, useMemo, useCallback} from 'react';
+import {
+  View,
+  Text,
+  StyleSheet,
+  FlatList,
+  TouchableOpacity,
+  ActivityIndicator,
+  TextInput,
+  RefreshControl,
+} from 'react-native';
 import Dropdown from './Dropdown';
 
 const DataTable = ({
@@ -11,20 +20,56 @@ const DataTable = ({
   itemsPerPage = 10,
   currentPage = 1,
   onPageChange,
+  onRefresh,
   color = '#cacaca',
   rowStyle = {},
   cellStyle = {},
   loadingComponent,
   emptyComponent,
 }) => {
+  const [refreshing, setRefreshing] = useState(false);
+  const [flatListFooterVisible, setFlatListFooterVisible] = useState(true);
   const [searchText, setSearchText] = useState('');
   const [sortKey, setSortKey] = useState(null);
   const [sortAsc, setSortAsc] = useState(true);
+  const totalPages = Math.ceil(totalItems / itemsPerPage);
+  const pageNumbers = Array.from({length: totalPages}, (_, i) => String(i + 1));
 
+  const handlePageChange = useCallback(
+    option => {
+      onPageChange(option.value);
+    },
+    [onPageChange],
+  );
 
-  const handlePageChange = useCallback((option) => {
-    onPageChange(option.value);
-  }, [onPageChange]);
+  const handleRefresh = async () => {
+    if (!onRefresh) {
+      return;
+    }
+
+    setRefreshing(true);
+    try {
+      await onRefresh(currentPage);
+    } finally {
+      setRefreshing(false);
+    }
+  };
+
+  const handleEndReached = useCallback(() => {
+    if (currentPage <= totalPages) {
+      console.log('End reached fetching more data');
+      onPageChange(currentPage + 1);
+    }
+    setFlatListFooterVisible(false);
+  }, [currentPage, onPageChange, totalPages]);
+
+  const renderFooter = () => {
+    if (!flatListFooterVisible) {
+      return null;
+    }
+
+    return <ActivityIndicator />;
+  };
 
   const filteredData = useMemo(() => {
     return data.filter(row =>
@@ -33,15 +78,21 @@ const DataTable = ({
         return typeof val === 'string' || typeof val === 'number'
           ? val.toString().toLowerCase().includes(searchText.toLowerCase())
           : false;
-      })
+      }),
     );
   }, [data, columns, searchText]);
 
   const sortedData = useMemo(() => {
-    if (!sortKey) { return filteredData; }
+    if (!sortKey) {
+      return filteredData;
+    }
     return [...filteredData].sort((a, b) => {
-      if (a[sortKey] < b[sortKey]) { return sortAsc ? -1 : 1; }
-      if (a[sortKey] > b[sortKey]) { return sortAsc ? 1 : -1; }
+      if (a[sortKey] < b[sortKey]) {
+        return sortAsc ? -1 : 1;
+      }
+      if (a[sortKey] > b[sortKey]) {
+        return sortAsc ? 1 : -1;
+      }
       return 0;
     });
   }, [filteredData, sortKey, sortAsc]);
@@ -55,9 +106,37 @@ const DataTable = ({
     }
   };
 
+  const renderItem = ({item, index}) => (
+    <View style={[styles.row, rowStyle]} key={index}>
+      {columns.map((column, colIndex) => (
+        <Text
+          key={colIndex}
+          style={[
+            styles.cell,
+            {flex: column.flex || 1},
+            cellStyle,
+            column.cellStyle,
+          ]}>
+          {column.render ? column.render(item) : item[column.key]}
+        </Text>
+      ))}
+    </View>
+  );
+
+  const renderEmptyComponent = () => {
+    return (
+      <View style={styles.emptyComponent}>
+        <Text>No data found</Text>
+        <TouchableOpacity onPress={onPageChange(1)}>
+          <Text style={styles.retryText}>Retry</Text>
+        </TouchableOpacity>
+      </View>
+    );
+  };
+
   return (
     <View style={styles.container}>
-      <View style={[styles.searchContainer, { backgroundColor: color }]}>
+      <View style={[styles.searchContainer, {backgroundColor: color}]}>
         <TextInput
           placeholder="Search"
           placeholderTextColor="#979797"
@@ -68,12 +147,11 @@ const DataTable = ({
       </View>
       {/* Table Header */}
       <View style={[styles.headerRow]}>
-        {columns.map((column) => (
+        {columns.map((column, index) => (
           <TouchableOpacity
-            key={column.key}
+            key={index}
             onPress={() => column.key && toggleSort(column.key)}
-            style={[{ flex: column.flex || 1 }, column.headerStyle]}
-          >
+            style={[{flex: column.flex || 1}, column.headerStyle]}>
             <Text style={styles.headerCell}>
               {column.title}
               {sortKey === column.key ? (sortAsc ? ' ↑' : ' ↓') : ''}
@@ -84,45 +162,40 @@ const DataTable = ({
 
       {/* Table Body */}
       {isLoading ? (
-        loadingComponent || <ActivityIndicator size="large" style={styles.loader} />
+        loadingComponent || (
+          <ActivityIndicator size="large" style={styles.loader} />
+        )
       ) : (
         <FlatList
           data={sortedData}
-          keyExtractor={(item) => item.id?.toString() || Math.random().toString()}
-          renderItem={({ item }) => (
-            <View style={[styles.row, rowStyle]}>
-              {columns.map((column, colIndex) => (
-                <Text
-                  key={colIndex}
-                  style={[
-                    styles.cell,
-                    { flex: column.flex || 1 },
-                    cellStyle,
-                    column.cellStyle,
-                  ]}
-                >
-                  {column.render ? column.render(item) : item[column.key]}
-                </Text>
-              ))}
-            </View>
-          )}
-          ListEmptyComponent={
-            emptyComponent || <Text style={styles.noDataText}>No data available</Text>
+          keyExtractor={(_, index) => index.toString()}
+          renderItem={renderItem}
+          initialNumToRender={10}
+          onEndReached={handleEndReached}
+          ListFooterComponent={sortedData.length > 10 ? renderFooter : null}
+          ListEmptyComponent={emptyComponent || renderEmptyComponent}
+          refreshControl={
+            <RefreshControl
+              onRefresh={handleRefresh}
+              progressBackgroundColor="#000"
+              refreshing={refreshing}
+              colors={['#6200ee']}
+              tintColor="#6200ee"
+            />
           }
         />
       )}
 
       {/* Pagination */}
       {!isLoading && pagination && (
-        <View style={[styles.pagination, { backgroundColor: color }]}>
+        <View style={[styles.pagination, {backgroundColor: color}]}>
           <TouchableOpacity
             onPress={() => onPageChange(1)}
             disabled={currentPage === 1}
             style={[
               styles.pageButton,
-              (currentPage === 1) && styles.disabledButton,
-            ]}
-          >
+              currentPage === 1 && styles.disabledButton,
+            ]}>
             <View style={[styles.icon, styles.iconPrev]} />
             <View style={[styles.icon, styles.iconPrev]} />
           </TouchableOpacity>
@@ -131,16 +204,15 @@ const DataTable = ({
             disabled={currentPage === 1}
             style={[
               styles.pageButton,
-              (currentPage === 1) && styles.disabledButton,
-            ]}
-          >
+              currentPage === 1 && styles.disabledButton,
+            ]}>
             <View style={[styles.icon, styles.iconPrev]} />
           </TouchableOpacity>
           {/* <Text style={styles.pageInfo}>
             Page {currentPage} of {Math.ceil(totalItems / itemsPerPage)}
           </Text> */}
           <Dropdown
-            options={Array.from({ length: totalItems / itemsPerPage }, (_, i) => String(i + 1))}
+            options={pageNumbers}
             onChange={handlePageChange}
             placeholder="Page"
             position="top"
@@ -155,7 +227,7 @@ const DataTable = ({
                 borderRadius: 5,
                 padding: 5,
               },
-              text: { fontSize: 12, textAlign: 'center' },
+              text: {fontSize: 12, textAlign: 'center'},
               icon: {
                 width: 7,
                 height: 7,
@@ -174,10 +246,10 @@ const DataTable = ({
             }
             style={[
               styles.pageButton,
-              (currentPage === Math.ceil(totalItems / itemsPerPage) || isLoading) &&
-              styles.disabledButton,
-            ]}
-          >
+              (currentPage === Math.ceil(totalItems / itemsPerPage) ||
+                isLoading) &&
+                styles.disabledButton,
+            ]}>
             <View style={[styles.icon, styles.iconNext]} />
           </TouchableOpacity>
           <TouchableOpacity
@@ -185,9 +257,9 @@ const DataTable = ({
             disabled={currentPage === totalItems / itemsPerPage}
             style={[
               styles.pageButton,
-              (currentPage === totalItems / itemsPerPage) && styles.disabledButton,
-            ]}
-          >
+              currentPage === totalItems / itemsPerPage &&
+                styles.disabledButton,
+            ]}>
             <View style={[styles.icon, styles.iconNext]} />
             <View style={[styles.icon, styles.iconNext]} />
           </TouchableOpacity>
@@ -271,11 +343,6 @@ const styles = StyleSheet.create({
   pageInfo: {
     color: '#666',
   },
-  firstPage: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
   icon: {
     width: 10,
     height: 10,
@@ -284,10 +351,23 @@ const styles = StyleSheet.create({
     borderRightWidth: 2,
   },
   iconPrev: {
-    transform: [{ rotate: '135deg' }],
+    transform: [{rotate: '135deg'}],
   },
   iconNext: {
-    transform: [{ rotate: '-45deg' }],
+    transform: [{rotate: '-45deg'}],
+  },
+  emptyComponent: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  text: {
+    color: '#000',
+    fontSize: 16,
+  },
+  retryText: {
+    color: '#6200ee',
+    marginTop: 10,
   },
 });
 
