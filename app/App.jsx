@@ -15,6 +15,7 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import DataTable from '../components/DataTable';
 import { HotUpdater } from '@hot-updater/react-native';
 import ProgressBar from '../components/ProgressBar';
+import Box from '../components/Box';
 
 const { width, height } = Dimensions.get('window');
 
@@ -114,8 +115,8 @@ const App = () => {
     <GestureHandlerRootView className="flex-1 bg-white">
       <View className="bg-white flex-1 p-5">
         <View className="data-table flex-1 mt-5">
-          {/* <Text className="text-center text-lg font-semibold p-3">Paginated User Table</Text> */}
-          {/* <DataTable
+          <Text className="text-center text-lg font-semibold p-3">Paginated User Table</Text>
+          <DataTable
             columns={columns}
             data={users}
             isLoading={isLoading}
@@ -124,12 +125,12 @@ const App = () => {
             itemsPerPage={itemsPerPage}
             currentPage={currentPage}
             onPageChange={fetchUsers}
-            color="#14b8a6"
+            color="red"
           // headerStyle={{ backgroundColor: '#4CAF50' }}
           // rowStyle={{ backgroundColor: '#f9f9f9' }}
-          /> */}
+          />
           {/* <Text className="text-center text-lg font-semibold p-3">Non-Paginated Product Table</Text> */}
-          <DataTable
+          {/* <DataTable
             columns={columns}
             data={users}
             isLoading={isLoading}
@@ -139,7 +140,7 @@ const App = () => {
             onPageChange={fetchUsers}
             onRefresh={handleRefresh}
             pagination={false}
-          />
+          /> */}
         </View>
       </View>
     </GestureHandlerRootView >
@@ -151,28 +152,25 @@ export default HotUpdater.wrap({
   requestHeaders: {
     // if you want to use the request headers, you can add them here
   },
-  fallbackComponent: ({ progress, status, message }) => {
-    const showModal = status === 'UPDATING' || status === 'CHECKING';
+  fallbackComponent: ({ progress, status }) => {
+    // const showModal = status === 'UPDATING' || status === 'CHECK_FOR_UPDATE';
 
     return (
-      <Modal
-        visible={showModal}
-        transparent
-        animationType="fade"
-      >
-        <View style={styles.modalOverlay}>
-          <View style={styles.modalContent}>
-            <ActivityIndicator size="large" color="#ffffff" />
-            <Text style={styles.title}>
-              {status === 'UPDATING' ? 'Updating App...' : 'Checking for Updates...'}
-            </Text>
-            {message ? <Text style={styles.message}>{message}</Text> : null}
-            {progress > 0 ? (
-              <ProgressBar progress={Math.round(progress * 100)} size="small" variant="success" />
-            ) : null}
-          </View>
-        </View>
-      </Modal>
+      <View style={styles.modalContent}>
+        <Box elevation={3}>
+          <ActivityIndicator size="large" color="#000" />
+          <Text style={styles.title}>
+            {status === 'UPDATING' ? 'Updating App...' : 'Checking for Updates...'}
+          </Text>
+          {/* <Text className="text-sm text-black text-center font-medium">
+            A new version of the application is available. Please press the
+            download button and install the app.
+          </Text> */}
+          {progress > 0 ? (
+            <ProgressBar progress={Math.round(progress * 100)} size="small" variant="success" />
+          ) : null}
+        </Box>
+      </View>
     );
   },
 })(App);
@@ -229,18 +227,13 @@ const styles = StyleSheet.create({
     marginVertical: 20,
     fontSize: 16,
   },
-  modalOverlay: {
-    flex: 1,
-    backgroundColor: 'rgba(0,0,0,0.5)',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
   modalContent: {
-    backgroundColor: '#333',
+    backgroundColor: '#ddd',
     padding: 24,
     borderRadius: 12,
+    flex: 1,
+    justifyContent: 'center',
     alignItems: 'center',
-    minWidth: '70%',
   },
   title: {
     color: 'white',
