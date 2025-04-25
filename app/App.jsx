@@ -51,7 +51,8 @@ const App = () => {
       const skip = (page - 1) * itemsPerPage;
       const response = await fetch(`https://dummyjson.com/users?limit=${itemsPerPage}&skip=${skip}`);
       const data = await response.json();
-      setUsers(data.users);
+      setUsers(prev=>[...prev, ...data.users]);
+      // setUsers(data.users);
       setTotalItems(data.total);
       setCurrentPage(page);
     } catch (error) {

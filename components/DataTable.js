@@ -55,20 +55,27 @@ const DataTable = ({
     }
   };
 
-  const handleEndReached = useCallback(() => {
-    if (currentPage <= totalPages) {
-      console.log('End reached fetching more data');
-      onPageChange(currentPage + 1);
+  // const handleEndReached = useCallback(() => {
+  //   if (currentPage <= totalPages) {
+  //     console.log('End reached fetching more data');
+  //     onPageChange(currentPage + 1);
+  //   }
+  //   setFlatListFooterVisible(false);
+  // }, [currentPage, onPageChange, totalPages]);
+
+  const handleLoadMore = () => {
+    if (!isLoading && data.length < totalItems) {
+      fetchUsers();
     }
-    setFlatListFooterVisible(false);
-  }, [currentPage, onPageChange, totalPages]);
+  };
 
   const renderFooter = () => {
-    if (!flatListFooterVisible) {
-      return null;
-    }
-
-    return <ActivityIndicator />;
+    if (!isLoading) return null;
+    return (
+      <View style={styles.footer}>
+        <ActivityIndicator size="small" color="#0000ff" />
+      </View>
+    );
   };
 
   const filteredData = useMemo(() => {
