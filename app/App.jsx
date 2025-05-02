@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import {
   ActivityIndicator,
   Dimensions,
@@ -16,18 +16,19 @@ import DataTable from '../components/DataTable';
 import { HotUpdater } from '@hot-updater/react-native';
 import ProgressBar from '../components/ProgressBar';
 import Box from '../components/Box';
+import Table from '../components/Table';
 
 const { width, height } = Dimensions.get('window');
 
 const App = () => {
   usePermissions();
-  const [currentPage, setCurrentPage] = useState(1);
-  const [totalItems, setTotalItems] = useState(0);
-  const itemsPerPage = 15;
+  // const [currentPage, setCurrentPage] = useState(1);
+  // const [totalItems, setTotalItems] = useState(0);
+  // const itemsPerPage = 15;
 
 
-  const [users, setUsers] = useState([]);
-  const [isLoading, setIsLoading] = useState(false);
+  // const [users, setUsers] = useState([]);
+  // const [isLoading, setIsLoading] = useState(false);
   // const columns = [
   //   { title: 'ID', key: 'id', flex: 0.5 },
   //   {
@@ -45,26 +46,26 @@ const App = () => {
   ];
 
 
-  const fetchUsers = async (page = 1) => {
-    setIsLoading(true);
-    try {
-      const skip = (page - 1) * itemsPerPage;
-      const response = await fetch(`https://dummyjson.com/users?limit=${itemsPerPage}&skip=${skip}`);
-      const data = await response.json();
-      setUsers(prev=>[...prev, ...data.users]);
-      // setUsers(data.users);
-      setTotalItems(data.total);
-      setCurrentPage(page);
-    } catch (error) {
-      console.error('Error fetching users:', error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
+  // const fetchUsers = async (page = 1) => {
+  //   setIsLoading(true);
+  //   try {
+  //     const skip = (page - 1) * itemsPerPage;
+  //     const response = await fetch(`https://dummyjson.com/users?limit=${itemsPerPage}&skip=${skip}`);
+  //     const data = await response.json();
+  //     setUsers(prev=>[...prev, ...data.users]);
+  //     // setUsers(data.users);
+  //     setTotalItems(data.total);
+  //     setCurrentPage(page);
+  //   } catch (error) {
+  //     console.error('Error fetching users:', error);
+  //   } finally {
+  //     setIsLoading(false);
+  //   }
+  // };
 
-  useEffect(() => {
-    fetchUsers();
-  }, []);
+  // useEffect(() => {
+  //   fetchUsers();
+  // }, []);
 
   // const [products, setProducts] = useState([]);
   // const [isLoading, setIsLoading] = useState(false);
@@ -90,10 +91,10 @@ const App = () => {
   //   fetchProducts();
   // }, []);
 
-  const handleRefresh = async (page) => {
-    // await fetchProducts(page);
-    await fetchUsers(page);
-  };
+  // const handleRefresh = async (page) => {
+  //   // await fetchProducts(page);
+  //   await fetchUsers(page);
+  // };
 
   // const columns = [
   //   { title: 'ID', key: 'id', flex: 1 },
@@ -116,8 +117,8 @@ const App = () => {
     <GestureHandlerRootView className="flex-1 bg-white">
       <View className="bg-white flex-1 p-5">
         <View className="data-table flex-1 mt-5">
-          <Text className="text-center text-lg font-semibold p-3">Paginated User Table</Text>
-          <DataTable
+          {/* <Text className="text-center text-lg font-semibold p-3">Paginated User Table</Text> */}
+          {/* <DataTable
             columns={columns}
             data={users}
             isLoading={isLoading}
@@ -127,9 +128,9 @@ const App = () => {
             currentPage={currentPage}
             onPageChange={fetchUsers}
             color="red"
-          // headerStyle={{ backgroundColor: '#4CAF50' }}
-          // rowStyle={{ backgroundColor: '#f9f9f9' }}
-          />
+          headerStyle={{ backgroundColor: '#4CAF50' }}
+          rowStyle={{ backgroundColor: '#f9f9f9' }}
+          /> */}
           {/* <Text className="text-center text-lg font-semibold p-3">Non-Paginated Product Table</Text> */}
           {/* <DataTable
             columns={columns}
@@ -142,6 +143,12 @@ const App = () => {
             onRefresh={handleRefresh}
             pagination={false}
           /> */}
+          <Table
+            columns={columns}
+            fetchUrl="https://dummyjson.com/users"
+            responseDataKey="users"
+            itemsPerPage={15}
+            pagination={true} />
         </View>
       </View>
     </GestureHandlerRootView >
@@ -158,19 +165,19 @@ export default HotUpdater.wrap({
 
     return (
       <View style={styles.modalContent}>
-        <Box elevation={3}>
+        {/* <Box elevation={3}>
           <ActivityIndicator size="large" color="#000" />
-          <Text style={styles.title}>
+          <Text className="text-black text-center">
             {status === 'UPDATING' ? 'Updating App...' : 'Checking for Updates...'}
           </Text>
-          {/* <Text className="text-sm text-black text-center font-medium">
+          <Text className="text-sm text-black text-center font-medium">
             A new version of the application is available. Please press the
             download button and install the app.
-          </Text> */}
+          </Text>
           {progress > 0 ? (
             <ProgressBar progress={Math.round(progress * 100)} size="small" variant="success" />
           ) : null}
-        </Box>
+        </Box> */}
       </View>
     );
   },
