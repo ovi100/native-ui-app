@@ -4,7 +4,6 @@ import {
   Modal as RNModal,
   StyleSheet,
   Text,
-  TouchableOpacity,
   View,
 } from 'react-native';
 import ButtonClose from './ButtonClose';

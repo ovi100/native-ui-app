@@ -1,15 +1,11 @@
 import React, {useState} from 'react';
-import {TextInput, TouchableOpacity, View} from 'react-native';
-import {Eye, EyeOff} from '../icons';
-import useAppContext from '../hooks/useAppContext';
+import {Text, TextInput, TouchableOpacity, View} from 'react-native';
+import {useAppContext} from '../hooks';
 
 const Input = ({isPassword = false, ...props}) => {
   const {deviceInfo} = useAppContext();
   const [secureText, setSecureText] = useState(isPassword);
   const isDarkMode = deviceInfo.theme === 'dark';
-  const IconWrapper = secureText ? EyeOff : Eye;
-
-  // console.log(props);
 
   return (
     <View className="relative">
@@ -23,7 +19,9 @@ const Input = ({isPassword = false, ...props}) => {
         <TouchableOpacity
           className="absolute top-4 md:top-5 right-4"
           onPress={() => setSecureText(prev => !prev)}>
-          <IconWrapper size={5} color={isDarkMode ? '#aaa' : '#000'} />
+          <Text style={{color: isDarkMode ? '#aaa' : '#000'}}>
+            {secureText ? 'hide' : 'show'}
+          </Text>
         </TouchableOpacity>
       )}
     </View>

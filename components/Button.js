@@ -6,7 +6,7 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import {edges, sizes, variants} from '../utils/common';
+import {edges, sizes, variants} from '../lib/common';
 
 /**
  * A customizable button component with support for size, variant, icons, loading, and disabled states.
@@ -92,7 +92,10 @@ const Button = ({
       style={[styles.container, dynamicContainerStyles]}>
       {loading ? (
         <>
-          <ActivityIndicator size="small" color="#FFF" />
+          <ActivityIndicator
+            size="small"
+            color={type === 'outline' ? variants[variant].bg : '#fff'}
+          />
           {text && (
             <Text style={[styles.loadingText, dynamicTextStyles]}>{text}</Text>
           )}

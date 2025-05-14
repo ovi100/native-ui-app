@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, {useMemo, useState} from 'react';
 import {
   Dimensions,
   View,
@@ -13,9 +13,9 @@ import Animated, {
   withTiming,
   useAnimatedStyle,
 } from 'react-native-reanimated';
-import { elevations } from '../lib/common';
+import {elevations} from '../lib/common';
 
-const { height } = Dimensions.get('window');
+const {height} = Dimensions.get('window');
 
 const HEIGHT = height;
 
@@ -36,7 +36,7 @@ const Dropdown = ({
 
   const normalizedOptions = useMemo(() => {
     return options.map(item =>
-      typeof item === 'string' ? { label: item, value: item } : item,
+      typeof item === 'string' ? {label: item, value: item} : item,
     );
   }, [options]);
 
@@ -46,19 +46,19 @@ const Dropdown = ({
       open
         ? 0
         : searchable
-          ? normalizedOptions.length * 45 + 50
-          : options.length * 45,
-      { duration: 300 },
+        ? normalizedOptions.length * 45 + 50
+        : options.length * 45,
+      {duration: 300},
     );
-    rotateValue.value = withTiming(open ? 45 : 225, { duration: 300 });
+    rotateValue.value = withTiming(open ? 45 : 225, {duration: 300});
   };
 
   const handleSelect = option => {
     setSelected(option.value);
     setSearchText('');
     setOpen(false);
-    sharedHeight.value = withTiming(0, { duration: 300 });
-    rotateValue.value = withTiming(45, { duration: 300 });
+    sharedHeight.value = withTiming(0, {duration: 300});
+    rotateValue.value = withTiming(45, {duration: 300});
     onChange(option);
   };
 
@@ -67,7 +67,7 @@ const Dropdown = ({
   }));
 
   const rotateStyle = useAnimatedStyle(() => ({
-    transform: [{ rotate: `${rotateValue.value}deg` }],
+    transform: [{rotate: `${rotateValue.value}deg`}],
   }));
 
   const filteredOptions = normalizedOptions.filter(
@@ -82,10 +82,16 @@ const Dropdown = ({
     <View style={styles.container}>
       <TouchableOpacity
         style={[dropdownStyle?.button ? dropdownStyle?.button : styles.button]}
-        onPress={(e) => toggleDropdown()}
-      >
-        <Text style={dropdownStyle?.text ? dropdownStyle?.text : styles.text}>{selected || placeholder}</Text>
-        <Animated.View style={[dropdownStyle?.icon ? dropdownStyle?.icon : styles.icon, rotateStyle]} />
+        onPress={e => toggleDropdown()}>
+        <Text style={dropdownStyle?.text ? dropdownStyle?.text : styles.text}>
+          {selected || placeholder}
+        </Text>
+        <Animated.View
+          style={[
+            dropdownStyle?.icon ? dropdownStyle?.icon : styles.icon,
+            rotateStyle,
+          ]}
+        />
       </TouchableOpacity>
 
       <Animated.View
@@ -110,7 +116,7 @@ const Dropdown = ({
           <FlatList
             data={searchable ? filteredOptions : normalizedOptions}
             keyExtractor={item => item.value.toString()}
-            renderItem={({ item }) => (
+            renderItem={({item}) => (
               <TouchableOpacity
                 onPress={() => handleSelect(item)}
                 style={[styles.flexRow, styles.option]}>
@@ -138,8 +144,9 @@ const styles = StyleSheet.create({
   },
   flexRow: {
     flexDirection: 'row',
-    justifyContent: 'center',
+    justifyContent: 'space-between',
     alignItems: 'center',
+    gap: 5,
   },
   button: {
     flexDirection: 'row',
@@ -167,7 +174,7 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     // borderBottomLeftRadius: 8,
     // borderBottomRightRadius: 8,
-    zIndex: 100,
+    zIndex: 1000,
   },
   dropdownTop: {
     bottom: '100%',
@@ -200,7 +207,7 @@ const styles = StyleSheet.create({
     borderBottomWidth: 2.5,
     borderRightWidth: 2.5,
     borderColor: 'green',
-    transform: [{ rotate: '40deg' }],
+    transform: [{rotate: '40deg'}],
     marginRight: 10,
   },
   noResults: {

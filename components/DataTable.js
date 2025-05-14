@@ -63,11 +63,11 @@ const DataTable = ({
   //   setFlatListFooterVisible(false);
   // }, [currentPage, onPageChange, totalPages]);
 
-  const handleLoadMore = () => {
-    if (!isLoading && data.length < totalItems) {
-      fetchUsers();
-    }
-  };
+  // const handleLoadMore = () => {
+  //   if (!isLoading && data.length < totalItems) {
+  //     fetchUsers();
+  //   }
+  // };
 
   const renderFooter = () => {
     if (!isLoading) return null;
@@ -178,7 +178,7 @@ const DataTable = ({
           keyExtractor={(_, index) => index.toString()}
           renderItem={renderItem}
           initialNumToRender={10}
-          onEndReached={handleEndReached}
+          // onEndReached={handleEndReached}
           ListFooterComponent={sortedData.length > 10 ? renderFooter : null}
           ListEmptyComponent={emptyComponent || renderEmptyComponent}
           refreshControl={
